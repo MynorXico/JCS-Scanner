@@ -17,7 +17,7 @@ import javax.tools.*;
  */
 public class Main {
     public static void main(String[] args) throws IOException{
-        String root = new File(".").getCanonicalPath()+"\\src";
+        String root = new File(".").getCanonicalPath();
         String sourcePath = root + "\\php\\scanner\\";
         
         generarLexer(sourcePath+"Lexer.flex");       
@@ -34,13 +34,7 @@ public class Main {
             
         }
         
-        new File(sourcePath+"Interfaz.class").delete();
-        new File(sourcePath+"Interfaz$1.class").delete();
-        new File(sourcePath+"Interfaz$2.class").delete();
-        new File(sourcePath+"Interfaz$3.class").delete();
-        new File(sourcePath+"Lexer.class").delete();
-        new File(sourcePath+"Lexer.java").delete();
-        new File(sourcePath+"Token.class").delete();
+        
        
     }
     
