@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import static javafx.scene.paint.Color.color;
@@ -82,6 +83,11 @@ public class Interfaz extends javax.swing.JFrame {
         jMenuItem1 = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
+            }
+        });
 
         jTextArea1.setEditable(false);
         jTextArea1.setBackground(new java.awt.Color(0, 0, 51));
@@ -209,6 +215,23 @@ public class Interfaz extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jMenuItem1ActionPerformed
+
+    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+        String sourcePath=null;
+        try {
+            sourcePath = new File(".").getCanonicalPath()+"\\src" + "\\php\\scanner\\";
+        } catch (IOException ex) {
+            Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        new File(sourcePath+"Interfaz.class").delete();
+        new File(sourcePath+"Interfaz$1.class").delete();
+        new File(sourcePath+"Interfaz$2.class").delete();
+        new File(sourcePath+"Interfaz$3.class").delete();
+        new File(sourcePath+"Lexer.class").delete();
+        new File(sourcePath+"Lexer.java").delete();
+        new File(sourcePath+"Token.class").delete();
+    }//GEN-LAST:event_formWindowClosed
     public void Analyze() throws FileNotFoundException, BadLocationException{
         jTextPane1.setStyledDocument(new DefaultStyledDocument());
         long start = 0;
