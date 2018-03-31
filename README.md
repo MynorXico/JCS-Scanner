@@ -1,7 +1,7 @@
 
-Universidad Rafael Landívar
-Lenguajes Formales y Autómatas
-Proyecto No. 1
+Universidad Rafael Landívar</br>
+Lenguajes Formales y Autómatas</br>
+Proyecto No. 1</br>
 
 # Analizador Léxico
 El proyecto consiste en un analizador léxico para el lenguaje PHP utilizando la herramienta JFlex.
