@@ -27,7 +27,7 @@ public class miniPHP {
             
         }
         System.out.println("Lexer succesfully generated");
-        System.out.println(new BufferedReader(new InputStreamReader(Runtime.getRuntime().exec("javac "+sourcePath+"Interfaz.java "+ sourcePath+"Token.java " + sourcePath+"Lexer.java").getInputStream())).readLine());       
+        System.out.println(new BufferedReader(new InputStreamReader(Runtime.getRuntime().exec("javac \""+sourcePath+"Interfaz.java\" \""+ sourcePath+"Token.java\" \"" + sourcePath+"Lexer.java\"").getInputStream())).readLine());       
 
         String command = "java php.scanner.Interfaz";
         f = new File(sourcePath+"Interfaz.class");
