@@ -405,7 +405,7 @@ public class Interfaz extends javax.swing.JFrame {
             }catch (FileNotFoundException ex){
                 System.out.println("An error ocurred");
             }
-            fichero = new File("output.php");
+            fichero = new File(filePath+".out");
             try{
                 writer = new PrintWriter(fichero);
                 writer.print(ResultadoArchivoSalida);

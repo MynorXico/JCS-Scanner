@@ -15,9 +15,9 @@ import javax.tools.*;
  *
  * @author Maynor
  */
-public class Main {
+public class miniPHP {
     public static void main(String[] args) throws IOException{
-        String root = new File(".").getCanonicalPath()+"\\src";
+        String root = new File(".").getCanonicalPath();
         String sourcePath = root + "\\php\\scanner\\";
         
         generarLexer(sourcePath+"Lexer.flex");       
