@@ -22,10 +22,13 @@ public class miniPHP {
         
         generarLexer(sourcePath+"Lexer.flex");       
        
-        
+        File f = new File(sourcePath+"Lexer.java");
+        while(!f.exists()){
+            
+        }
         Runtime.getRuntime().exec("javac "+sourcePath+"Interfaz.java "+ sourcePath+"Token.java " + sourcePath+"Lexer.java");
         String command = "java php.scanner.Interfaz";
-        File f = new File(sourcePath+"Interfaz.class");
+        f = new File(sourcePath+"Interfaz.class");
         while(!f.exists()){
         }
         try{
