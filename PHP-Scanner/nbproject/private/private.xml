@@ -3,10 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Maynor/Documents/Netbeans/PHP-Scanner/src/php/scanner/Token.java</file>
-            <file>file:/C:/Users/Maynor/Documents/Netbeans/PHP-Scanner/src/php/scanner/Interfaz.java</file>
-            <file>file:/C:/Users/Maynor/Documents/Netbeans/PHP-Scanner/src/php/scanner/Lexer.flex</file>
-            <file>file:/C:/Users/Maynor/Documents/Netbeans/PHP-Scanner/src/php/scanner/Main.java</file>
+            <file>file:/C:/Users/Maynor/source/repos/JPHP-Scanner/PHP-Scanner/build.xml</file>
+            <file>file:/C:/Users/Maynor/source/repos/JPHP-Scanner/PHP-Scanner/manifest.mf</file>
+            <file>file:/C:/Users/Maynor/source/repos/JPHP-Scanner/PHP-Scanner/src/php/scanner/miniPHP.java</file>
+            <file>file:/C:/Users/Maynor/source/repos/JPHP-Scanner/PHP-Scanner/src/php/scanner/Interfaz.java</file>
         </group>
     </open-files>
 </project-private>
