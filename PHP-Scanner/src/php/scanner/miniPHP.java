@@ -24,7 +24,7 @@ public class miniPHP {
        
         
         Runtime.getRuntime().exec("javac "+sourcePath+"Interfaz.java "+ sourcePath+"Token.java " + sourcePath+"Lexer.java");
-        String command = "java" + root + " php.scanner.Interfaz";
+        String command = "java php.scanner.Interfaz";
         File f = new File(sourcePath+"Interfaz.class");
         while(!f.exists()){
         }
