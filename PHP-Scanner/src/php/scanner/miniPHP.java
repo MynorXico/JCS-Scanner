@@ -17,7 +17,7 @@ import javax.tools.*;
  */
 public class miniPHP {
     public static void main(String[] args) throws IOException{
-        String root = new File(".").getCanonicalPath()+"\\src";
+        String root = new File(".").getCanonicalPath();
         String sourcePath = root + "\\php\\scanner\\";
         
         generarLexer(sourcePath+"Lexer.flex");       
@@ -29,7 +29,7 @@ public class miniPHP {
         System.out.println("Lexer succesfully generated");
         System.out.println(new BufferedReader(new InputStreamReader(Runtime.getRuntime().exec("javac "+sourcePath+"Interfaz.java "+ sourcePath+"Token.java " + sourcePath+"Lexer.java").getInputStream())).readLine());       
 
-        String command = "java -cp " + root + " php.scanner.Interfaz";
+        String command = "java php.scanner.Interfaz";
         f = new File(sourcePath+"Interfaz.class");
         while(!f.exists()){
         }
