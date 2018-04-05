@@ -37,11 +37,11 @@ hexadecimal = 0[xX][0-9a-fA-F]+
 octal = 0[0-7]+
 binary = 0[bB][01]+
 label = [a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*
-mag_constant = (__)(LINE|FILE|DIR|FUNCTION|CLASS|TRAIT|METHOD|NAMESPACE)(__)
+mag_constant = (__)({l}{i}{n}{e}|{f}{i}{l}{e}|{d}{i}{r}|{f}{u}{n}{c}{t}{i}{o}{n}|{c}{l}{a}{s}{s}|{t}{r}{a}{i}{t}|{m}{e}{t}{h}{o}{d}|{n}{a}{m}{e}{s}{p}{a}{c}{e})(__)
 ar_op = "+"|"-"|"*"|"/"|"%"|"**"
 cmp_op = "<"|">"|"<="|">="|"=="|"!="
-log_op = "and"|"or"|"xor"|"!"|"&&"|"||"
-ass_op = "="|"+="|"-="|"*="|"/="|"%="|".="|"&="|"|="|"^="|"<<="|">>="
+log_op = {a}{n}{d}|{o}{r}|{x}{o}{r}|"!"|"&&"|"||"
+ass_op = "="|"+="|"-="|"*="|"/="|"%="|".="|"&="|"|="|"^="|"<<="|">>="|"|"|"^"|"<<"|">>"
 inc_dec_op = "++"|"--"
 prnthss = "("|")"
 curly = "{"|"}"
@@ -51,6 +51,7 @@ comma = ","
 bool_type = {t}{r}{u}{e}|{f}{a}{l}{s}{e}
 int_type = [+-]?({decimal}|{hexadecimal}|{octal}|{binary})
 double_type = [-+]?[0-9]*\.?[0-9]+([eE]{int_type}.?[0-9]*)?
+numeric = {int_type}|{double_type}
 string_type = ('([^'\n\\]|\\.)*')|(\"([^\"\n\\]|\\.)*\")
 var_id = "$"{label}
 cnst_id = {label}
@@ -79,6 +80,9 @@ recordset = "$"{r}{e}{c}{o}{r}{d}{s}{e}{t}"["{string_type}"]"
 function = function
 rsrvd_words = __halt_compiler|break|clone|die|empty|endswitch|final|global|include_once|list|private|return|try|xor|abstract|callable|const|do|enddeclare|endwhile|finally|goto|instanceof|namespace|define|protected|static|unset|yield|and|case|continue|echo|endfor|eval|for|if|insteadof|new|public|switch|use|array|catch|declare|endforeach|exit|foreach|implements|interface|or|require|throw|var|as|class|default|elseif|endif|extends|function|include|isset|print|require_once|trait|while
 php = "<?"{p}{h}{p}|"?>"
+
+// ERR
+numPreVar = {numeric}({cnst_id}|{var_id})
 
 %{
 public String lexeme;
@@ -115,4 +119,5 @@ public int chars = 0;
 [ \t\r]+        {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return BLANK;}
 {rsrvd_words}   {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return RSRVWRDS;}
 {cnst_id}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return CONSTANT;}
-.               {chars += yytext().length(); lexeme = yytext();lineNumber=yyline;return ERROR;}
+.               {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return ERROR;}
+{numPreVar}     {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return ERROR;}

@@ -250,12 +250,12 @@ public class Interfaz extends javax.swing.JFrame {
     }
     
     public void LoadFile() throws FileNotFoundException, IOException, BadLocationException{
+        // File Choosing
         final JFileChooser fc = new JFileChooser();
         FileNameExtensionFilter asmFilter = new FileNameExtensionFilter(".php files (*.php)", "php");
         fc.addChoosableFileFilter(asmFilter);
         fc.setFileFilter(asmFilter);
         fc.showOpenDialog(this);
-        System.out.println("Closed");
         
         if(fc.getSelectedFile()==null)
             return;
@@ -269,6 +269,7 @@ public class Interfaz extends javax.swing.JFrame {
             tmpString = tmpString + currentLine+"\n";
             currentLine = br.readLine();
         }
+        // Fills text area with original PHP file content
         taOriginal.setText(tmpString);
     }
     /**
@@ -322,7 +323,6 @@ public class Interfaz extends javax.swing.JFrame {
             System.out.println("An error ocurred");
         }
         */
-     
         Reader reader = new BufferedReader(new FileReader(filename));
         Lexer lexer = new Lexer(reader);
         String ResultadoConsola = "";
@@ -338,17 +338,16 @@ public class Interfaz extends javax.swing.JFrame {
                 break;
             }
             if(token == Token.ERROR){
-                errores++;
-                
+                // En caso de error
+                errores++;                
                 ResultadoArchivoErrores +=lexer.lineNumber + ":"+ lexer.chars + "\tNot valid token:'"+lexer.lexeme+"'\n";
                 ResultadoConsola = ResultadoConsola +  "Not valid token: '" +lexer.lexeme+ "' |Line Number: " + lexer.lineNumber +" \n";
                 Document doc = jTextPane1.getDocument();
                 StyleConstants.setBackground(style,Color.RED);
                 doc.insertString(doc.getLength(), lexer.lexeme,style);
-                StyleConstants.setBackground(style, Color.WHITE);
             }
             else{
-                ResultadoConsola = ResultadoConsola + "TOKEN: " + token + " " + ((token==Token.NEWLINE)? "": lexer.lexeme) + "\n";
+                //ResultadoConsola = ResultadoConsola + "TOKEN: " + token + " " + ((token==Token.NEWLINE)? "": lexer.lexeme) + "\n";
                 Document doc = jTextPane1.getDocument();
                 if(token == Token.VARID){
                     StyleConstants.setForeground(style, new Color(0x5C, 0X35, 0X66));
@@ -385,7 +384,25 @@ public class Interfaz extends javax.swing.JFrame {
                         StyleConstants.setBackground(style,Color.YELLOW);
                         lexer.lexeme = "$recordset['"+content+"']";
                     }
+                }else if(token == Token.MAGCONSTANT){
+                    String content = lexer.lexeme;
+                    if(!content.equals(content.toUpperCase())){
+                        ResultadoArchivoErrores += lexer.lineNumber+":"+ lexer.chars + "\tUppercase CNST Excepted\n";
+                        content = content.toUpperCase();
+                        StyleConstants.setBackground(style,Color.YELLOW);
+                        lexer.lexeme = content;
+                    }
+                }else if(token == Token.LOGOP){
+                    String content = lexer.lexeme;
+                    if(!content.equals(content.toLowerCase())){
+                        ResultadoArchivoErrores += lexer.lineNumber+":"+lexer.chars+"\tLowercase LOGOP Excepted\n";
+                        content = content.toLowerCase();
+                        lexer.lexeme = content;
+                        StyleConstants.setBackground(style,Color.YELLOW);
+                    }
                 }
+                
+             
                 ResultadoArchivoSalida += lexer.lexeme;
                 doc.insertString(doc.getLength(), lexer.lexeme,style);
                 StyleConstants.setBold(style, false);
