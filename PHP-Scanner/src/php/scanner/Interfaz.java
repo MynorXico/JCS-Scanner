@@ -190,7 +190,7 @@ public class Interfaz extends javax.swing.JFrame {
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 453, Short.MAX_VALUE)
                     .addComponent(jScrollPane3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 103, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 306, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -339,7 +339,8 @@ public class Interfaz extends javax.swing.JFrame {
             }
             if(token == Token.ERROR){
                 errores++;
-                ResultadoArchivoErrores +=lexer.lineNumber+":"+ lexer.chars + "\tNot valid token:'"+lexer.lexeme+"'\n";
+                
+                ResultadoArchivoErrores +=lexer.lineNumber + ":"+ lexer.chars + "\tNot valid token:'"+lexer.lexeme+"'\n";
                 ResultadoConsola = ResultadoConsola +  "Not valid token: '" +lexer.lexeme+ "' |Line Number: " + lexer.lineNumber +" \n";
                 Document doc = jTextPane1.getDocument();
                 StyleConstants.setBackground(style,Color.RED);
@@ -378,7 +379,6 @@ public class Interfaz extends javax.swing.JFrame {
                 }else if(token == Token.DB){
                     StyleConstants.setForeground(style, Color.ORANGE);
                     String content = lexer.lexeme.substring(12, lexer.lexeme.length()-2);
-                    System.out.println(content);
                     if(!content.equals(content.toUpperCase())){
                         ResultadoArchivoErrores += lexer.lineNumber+":"+ lexer.chars + "\tUppercase AccessField Expected\n";
                         content = content.toUpperCase();
