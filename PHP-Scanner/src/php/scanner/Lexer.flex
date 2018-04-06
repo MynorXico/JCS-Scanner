@@ -5,6 +5,7 @@ import static php.scanner.Token.*;
 %class Lexer
 %type Token
 %line
+// Alphabet
 a = [aA]
 b = [bB]
 c = [cC]
@@ -38,6 +39,8 @@ octal = 0[0-7]+
 binary = 0[bB][01]+
 label = [a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*
 mag_constant = (__)({l}{i}{n}{e}|{f}{i}{l}{e}|{d}{i}{r}|{f}{u}{n}{c}{t}{i}{o}{n}|{c}{l}{a}{s}{s}|{t}{r}{a}{i}{t}|{m}{e}{t}{h}{o}{d}|{n}{a}{m}{e}{s}{p}{a}{c}{e})(__)
+
+// Operators
 ar_op = "+"|"-"|"*"|"/"|"%"|"**"
 cmp_op = "<"|">"|"<="|">="|"=="|"!="
 log_op = {a}{n}{d}|{o}{r}|{x}{o}{r}|"!"|"&&"|"||"
@@ -48,13 +51,19 @@ curly = "{"|"}"
 bracket = "["|"]"
 semicolon = ";"
 comma = ","
+
+// Data Types
 bool_type = {t}{r}{u}{e}|{f}{a}{l}{s}{e}
 int_type = [+-]?({decimal}|{hexadecimal}|{octal}|{binary})
 double_type = [-+]?[0-9]*\.?[0-9]+([eE]{int_type}.?[0-9]*)?
 numeric = {int_type}|{double_type}
 string_type = ('([^'\n\\]|\\.)*')|(\"([^\"\n\\]|\\.)*\")
+
+// Identifiers
 var_id = "$"{label}
 cnst_id = {label}
+
+// Control Structures
 if = {i}{f}|"?"|":"
 else = {e}{l}{s}{e}
 elseif = {e}{l}{s}{e}{i}{f}
@@ -70,6 +79,8 @@ include = {i}{n}{c}{l}{u}{d}{e}
 continue = {c}{o}{n}{t}{i}{n}{u}{e}
 return = {r}{e}{t}{u}{r}{n}
 control_struct = ({if}|{else}|{elseif}|{endif}|{while}|{do}|{for}|{foreach}|{break}|{switch}|{case}|{continue}|{return}|{include})
+
+// Special words
 superglobal = "$"(GLOBALS|_(SERVER|GET|POST|FILES|COOKIE|SESSION|REQUEST|ENV))
 other_reserved_var = "$"(php_errormsg|HTTP_RAW_POST_DATA|http_response_header|argc|argv)
 rsrvd_var = {superglobal}|{other_reserved_var}
@@ -95,13 +106,13 @@ public int chars = 0;
 
 {control_struct} {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return CTRLSTRCT;}
 \.              {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return CONCAT;}
-[\n]           {chars = 0; lineNumber=yyline; lexeme="\n";lineNumber=yyline; return NEWLINE;}
+[\n]            {chars = 0; lineNumber=yyline; lexeme="\n";lineNumber=yyline; return NEWLINE;}
 {php}           {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return PHP;}
 {mag_constant}  {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return MAGCONSTANT;}
 {rsrvd_var}     {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return RSRVDVAR;}
 {ass_op}        {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return ASSOP;}
-{ar_op} 	{chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return AROP;}
-{cmp_op}	{chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return CMPOP;}
+{ar_op} 	    {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return AROP;}
+{cmp_op}	    {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return CMPOP;}
 {log_op}        {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return LOGOP;}
 {inc_dec_op}    {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return INCDECOP;}
 {prnthss}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return PRNTHSS;}

@@ -341,13 +341,13 @@ public class Interfaz extends javax.swing.JFrame {
                 // En caso de error
                 errores++;                
                 ResultadoArchivoErrores +=lexer.lineNumber + ":"+ lexer.chars + "\tNot valid token:'"+lexer.lexeme+"'\n";
-                ResultadoConsola = ResultadoConsola +  "Not valid token: '" +lexer.lexeme+ "' |Line Number: " + lexer.lineNumber +" \n";
+                ResultadoConsola = ResultadoConsola + lexer.lineNumber+":"+lexer.chars+"\t\t\t********** NOT_A_VALID_TOKEN:" +lexer.lexeme+ "********** \n";
                 Document doc = jTextPane1.getDocument();
                 StyleConstants.setBackground(style,Color.RED);
                 doc.insertString(doc.getLength(), lexer.lexeme,style);
             }
             else{
-                //ResultadoConsola = ResultadoConsola + "TOKEN: " + token + " " + ((token==Token.NEWLINE)? "": lexer.lexeme) + "\n";
+                ResultadoConsola = ResultadoConsola + lexer.lineNumber+":"+lexer.chars+ ":" + token + ":" + ((token==Token.NEWLINE)? ":": lexer.lexeme) + "\n";
                 Document doc = jTextPane1.getDocument();
                 if(token == Token.VARID){
                     StyleConstants.setForeground(style, new Color(0x5C, 0X35, 0X66));
