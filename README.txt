@@ -14,12 +14,13 @@ A continuación se describe la forma de uso del software "miniPHP". El uso del m
  - Analizando el archivo
 ### Iniciando la Aplicación
 
-La aplicación debe ser ejecutada por medio de la línea de comandos
-
+La aplicación debe ser ejecutada por medio de la línea de comandos o haciendo doble clic sobre el fichero .jar
+#### Doble clic sobre fichero .JAR
+Ubicarse en la carpeta ```src``` del proyecto y hacer doble clic sobre el archivo jflex.jar
 #### Línea de comandos
 Ubicarse en la carpeta ```src``` del proyecto y ejecutar el comando:
 ```
-java -cp ../dist/miniPHP.jar;../dist/lib/*;. php.scanner.miniPHP
+java -cp miniPHP.jar;lib/*;. php.scanner.miniPHP
 ```
 Este comando se encarga de ejecutar ``` miniPHP.jar``` junto a sus dependencias.
 Al ejecutar el programa  ```miniPHP.jar``` se genera el Lexer ``` Lexer.java``` y  se abre ```Interfaz.java``` 
