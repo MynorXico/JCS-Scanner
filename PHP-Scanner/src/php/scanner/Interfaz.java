@@ -357,6 +357,7 @@ public class Interfaz extends javax.swing.JFrame {
                     StyleConstants.setBold(style, true);
                     StyleConstants.setForeground(style, new Color(0x55,0x57, 0x53));
                 }else if(token == Token.RSRVWRDS){
+                    lexer.lexeme = lexer.lexeme.toLowerCase();
                     StyleConstants.setForeground(style, new Color(0xF9,0x26, 0x72));
                 }else if(token == Token.BOOL){
                     StyleConstants.setForeground(style, new Color(0xAE,0x81, 0xFF));
@@ -377,13 +378,11 @@ public class Interfaz extends javax.swing.JFrame {
                     StyleConstants.setForeground(style, Color.LIGHT_GRAY);
                 }else if(token == Token.DB){
                     StyleConstants.setForeground(style, Color.ORANGE);
-                    String content = lexer.lexeme.substring(12, lexer.lexeme.length()-2);
-                    if(!content.equals(content.toUpperCase())){
-                        ResultadoArchivoErrores += lexer.lineNumber+":"+ lexer.chars + "\tUppercase AccessField Expected\n";
-                        content = content.toUpperCase();
-                        StyleConstants.setBackground(style,Color.YELLOW);
-                        lexer.lexeme = "$recordset['"+content+"']";
-                    }
+                    //String content = lexer.lexeme.substring(12, lexer.lexeme.length()-2);
+                    int i = lexer.lexeme.indexOf("[");
+                        String param = lexer.lexeme.substring(0,i).toLowerCase()+lexer.lexeme.substring(i, lexer.lexeme.length()).toUpperCase();
+
+                        lexer.lexeme = param;
                 }else if(token == Token.MAGCONSTANT){
                     String content = lexer.lexeme;
                     if(!content.equals(content.toUpperCase())){

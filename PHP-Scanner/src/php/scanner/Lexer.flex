@@ -57,7 +57,7 @@ bool_type = {t}{r}{u}{e}|{f}{a}{l}{s}{e}
 int_type = [+-]?({decimal}|{hexadecimal}|{octal}|{binary})
 double_type = [-+]?[0-9]*\.?[0-9]+([eE]{int_type}.?[0-9]*)?
 numeric = {int_type}|{double_type}
-string_type = ('([^'\n\\]|\\.)*')|(\"([^\"\n\\]|\\.)*\")
+string_type = ('([^'\\]|\\.)*')|(\"([^\"\\]|\\.)*\")
 
 // Identifiers
 var_id = "$"{label}
@@ -86,8 +86,11 @@ other_reserved_var = "$"(php_errormsg|HTTP_RAW_POST_DATA|http_response_header|ar
 rsrvd_var = {superglobal}|{other_reserved_var}
 single_line_comment = ("//"|"#")(.)*
 multiline_comment = (("/*")~("*/"))
+html_ignore =  (("<html>")~("</html>"))
+multiline_error = (("/*")~(\n))
+
 comment = {single_line_comment}|{multiline_comment}
-recordset = "$"{r}{e}{c}{o}{r}{d}{s}{e}{t}"["{string_type}"]"
+recordset = "$"{label}"["{string_type}"]"
 function = function
 rsrvd_words = __halt_compiler|break|clone|die|empty|endswitch|final|global|include_once|list|private|return|try|xor|abstract|callable|const|do|enddeclare|endwhile|finally|goto|instanceof|namespace|define|protected|static|unset|yield|and|case|continue|echo|endfor|eval|for|if|insteadof|new|public|switch|use|array|catch|declare|endforeach|exit|foreach|implements|interface|or|require|throw|var|as|class|default|elseif|endif|extends|function|include|isset|print|require_once|trait|while
 php = "<?"{p}{h}{p}|"?>"
@@ -100,6 +103,8 @@ public int lineNumber = 0;
 public int chars = 0;
 %}
 %%
+{recordset}     {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return DB;}
+
 {comment}       {chars += yytext().length(); if(yytext().contains("\n")){chars=0; lineNumber=yyline;} lexeme=yytext(); return COMMENT;}
 
 {string_type}   {chars += yytext().length(); lexeme=yytext(); lineNumber=yyline; return STRING;}
@@ -124,9 +129,10 @@ public int chars = 0;
 {int_type}      {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return INT;}
 {double_type}   {chars += yytext().length(); lexeme=yytext(); lineNumber=yyline;return DOUBLE;}
 {var_id}        {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return VARID;}
-{recordset}     {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return DB;}
 {function}      {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return FUNC;}
 [ \t\r]+        {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return BLANK;}
 {rsrvd_words}   {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return RSRVWRDS;}
-{cnst_id}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return CONSTANT;}
-.               {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return ERROR;}
+{cnst_id}|9pt       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return CONSTANT;}
+{int_type}({cnst_id}|{var_id}) {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return ERROR;}
+//{html_ignore} {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return CONSTANT;}
+.|{multiline_error}|"=!=" {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return ERROR;}
