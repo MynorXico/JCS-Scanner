@@ -14,8 +14,9 @@ A continuación se describe la forma de uso del software "miniPHP". El uso del m
  - Analizando el archivo
 ### Iniciando la Aplicación
 
-La aplicación debe ser ejecutada por medio de la línea de comandos
-
+La aplicación debe ser ejecutada por medio de la línea de comandos o haciendo doble clic sobre el fichero .jar
+#### Doble clic sobre fichero .JAR
+Ubicarse en la carpeta ```src``` del proyecto y hacer doble clic sobre el archivo jflex.jar
 #### Línea de comandos
 Ubicarse en la carpeta ```src``` del proyecto y ejecutar el comando:
 ```
