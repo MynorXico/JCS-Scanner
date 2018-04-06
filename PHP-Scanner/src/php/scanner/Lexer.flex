@@ -82,7 +82,6 @@ rsrvd_words = __halt_compiler|break|clone|die|empty|endswitch|final|global|inclu
 php = "<?"{p}{h}{p}|"?>"
 
 // ERR
-numPreVar = {numeric}({cnst_id}|{var_id})
 
 %{
 public String lexeme;
@@ -120,4 +119,3 @@ public int chars = 0;
 {rsrvd_words}   {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return RSRVWRDS;}
 {cnst_id}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return CONSTANT;}
 .               {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return ERROR;}
-{numPreVar}     {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return ERROR;}
