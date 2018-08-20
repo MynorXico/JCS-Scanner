@@ -341,7 +341,7 @@ public class Interfaz extends javax.swing.JFrame {
                 // En caso de error
                 errores++;                
                 ResultadoArchivoErrores +=lexer.lineNumber + ":"+ lexer.chars + "\tNot valid token:'"+lexer.lexeme+"'\n";
-                ResultadoConsola = ResultadoConsola + "*** Error line " + lexer.lineNumber +". *** Unrecognized char: " +lexer.lexeme + "\n";
+                ResultadoConsola = ResultadoConsola + "*** Error line " + lexer.lineNumber +". *** Unrecognized : " +lexer.lexeme + "\n";
                 Document doc = jTextPane1.getDocument();
                 StyleConstants.setBackground(style,Color.RED);
                 doc.insertString(doc.getLength(), lexer.lexeme,style);
@@ -353,12 +353,12 @@ public class Interfaz extends javax.swing.JFrame {
                 }
                 else if(token == Token.VARID){
                     StyleConstants.setForeground(style, new Color(0x5C, 0X35, 0X66));
-                }else if(token == Token.STRING){
+                }else if(token == Token.T_STRINGCONSTANT){
                     StyleConstants.setForeground(style, new Color(0x4E,0x9A, 0x06));
                 }else if(token == Token.FUNC){
                     StyleConstants.setBold(style, true);
                     StyleConstants.setForeground(style, new Color(0x55,0x57, 0x53));
-                }else if(token == Token.RSRVWRDS){
+                }else if(token == Token.T_RSRVWRDS){
                     lexer.lexeme = lexer.lexeme.toLowerCase();
                     StyleConstants.setForeground(style, new Color(0xF9,0x26, 0x72));
                 }else if(token == Token.BOOL){
@@ -394,38 +394,12 @@ public class Interfaz extends javax.swing.JFrame {
         
                
         }
-        if(errores == 0){
-            // No hay errores
-            File fichero = new File("errorslog.txt");
-            PrintWriter writer;
-            try{
-                writer = new PrintWriter(fichero);
-                writer.print(ResultadoArchivoErrores);
-                writer.close();
-            }catch (FileNotFoundException ex){
-                System.out.println("An error ocurred");
-            }
-            fichero = new File(filePath+".out");
-            try{
-                writer = new PrintWriter(fichero);
-                writer.print(ResultadoArchivoSalida);
-                writer.close();
-            }catch (FileNotFoundException ex){
-                System.out.println("An error ocurred");
-            }
-        }else{
-            JOptionPane.showMessageDialog(this, "Analized file contains incorrigible lexical errors.\n"
-                    + "open errorslog.txt to see them.");
-            File fichero = new File("errorslog.txt");
-            PrintWriter writer;
-            try{
-                writer = new PrintWriter(fichero);
-                writer.print(ResultadoArchivoErrores);
-                writer.close();
-            }catch (FileNotFoundException ex){
-                System.out.println("An error ocurred");
-            }
-        } 
+        File outputFile = new File(filePath+".out");
+        PrintWriter writer;
+        writer = new PrintWriter(outputFile);
+        writer.print(ResultadoConsola);
+        writer.close();
+        
     }
     public void validarArchivo(String filePath) throws FileNotFoundException, IOException, BadLocationException{
         this.probarLexerFile(filePath);
