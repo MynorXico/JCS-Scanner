@@ -106,11 +106,11 @@ public class Interfaz extends javax.swing.JFrame {
 
         jLabel3.setFont(new java.awt.Font("Calibri", 1, 24)); // NOI18N
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel3.setText("PHP Lexical Analyzer");
+        jLabel3.setText("C# Lexical Analyzer");
 
         jLabel4.setFont(new java.awt.Font("Calibri", 1, 24)); // NOI18N
         jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel4.setText("Original PHP File");
+        jLabel4.setText("Original C# File");
 
         taOriginal.setColumns(20);
         taOriginal.setRows(5);
@@ -123,7 +123,7 @@ public class Interfaz extends javax.swing.JFrame {
 
         jLabel5.setFont(new java.awt.Font("Calibri", 1, 24)); // NOI18N
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel5.setText("Corrected PHP File");
+        jLabel5.setText("Corrected C# File");
 
         jMenu1.setText("File");
 
@@ -341,15 +341,17 @@ public class Interfaz extends javax.swing.JFrame {
                 // En caso de error
                 errores++;                
                 ResultadoArchivoErrores +=lexer.lineNumber + ":"+ lexer.chars + "\tNot valid token:'"+lexer.lexeme+"'\n";
-                ResultadoConsola = ResultadoConsola + lexer.lineNumber+":"+lexer.chars+"\t\t\t********** NOT_A_VALID_TOKEN:" +lexer.lexeme+ "********** \n";
+                ResultadoConsola = ResultadoConsola + "*** Error line " + lexer.lineNumber +". *** Unrecognized char: " +lexer.lexeme + "\n";
                 Document doc = jTextPane1.getDocument();
                 StyleConstants.setBackground(style,Color.RED);
                 doc.insertString(doc.getLength(), lexer.lexeme,style);
             }
             else{
-                ResultadoConsola = ResultadoConsola + lexer.lineNumber+":"+lexer.chars+ ":" + token + ":" + ((token==Token.NEWLINE)? ":": lexer.lexeme) + "\n";
                 Document doc = jTextPane1.getDocument();
-                if(token == Token.VARID){
+                if(token == Token.T_IDENTIFIER){
+                    
+                }
+                else if(token == Token.VARID){
                     StyleConstants.setForeground(style, new Color(0x5C, 0X35, 0X66));
                 }else if(token == Token.STRING){
                     StyleConstants.setForeground(style, new Color(0x4E,0x9A, 0x06));
@@ -364,11 +366,6 @@ public class Interfaz extends javax.swing.JFrame {
                 }else if(token == Token.INT || token == Token.DOUBLE){
                     StyleConstants.setForeground(style, new Color(0x72,0x9F, 0xCF));
                 }else if(token == Token.CTRLSTRCT){
-                    if(!lexer.lexeme.equals(lexer.lexeme.toLowerCase())){
-                        ResultadoArchivoErrores += lexer.lineNumber+":"+ lexer.chars + "\tLowercase control structure expected\n";
-                        StyleConstants.setBackground(style,Color.YELLOW);
-                        lexer.lexeme = lexer.lexeme.toLowerCase();
-                    }
                     StyleConstants.setForeground(style, new Color(0xF9,0x26, 0x72));
                 }else if(token == Token.CONSTANT){
                     StyleConstants.setForeground(style, new Color(0xAE, 0x81, 0xFF));
@@ -378,30 +375,16 @@ public class Interfaz extends javax.swing.JFrame {
                     StyleConstants.setForeground(style, Color.LIGHT_GRAY);
                 }else if(token == Token.DB){
                     StyleConstants.setForeground(style, Color.ORANGE);
-                    //String content = lexer.lexeme.substring(12, lexer.lexeme.length()-2);
                     int i = lexer.lexeme.indexOf("[");
                         String param = lexer.lexeme.substring(0,i).toLowerCase()+lexer.lexeme.substring(i, lexer.lexeme.length()).toUpperCase();
-
-                        lexer.lexeme = param;
                 }else if(token == Token.MAGCONSTANT){
                     String content = lexer.lexeme;
-                    if(!content.equals(content.toUpperCase())){
-                        ResultadoArchivoErrores += lexer.lineNumber+":"+ lexer.chars + "\tUppercase CNST Excepted\n";
-                        content = content.toUpperCase();
-                        StyleConstants.setBackground(style,Color.YELLOW);
-                        lexer.lexeme = content;
-                    }
                 }else if(token == Token.LOGOP){
                     String content = lexer.lexeme;
-                    if(!content.equals(content.toLowerCase())){
-                        ResultadoArchivoErrores += lexer.lineNumber+":"+lexer.chars+"\tLowercase LOGOP Excepted\n";
-                        content = content.toLowerCase();
-                        lexer.lexeme = content;
-                        StyleConstants.setBackground(style,Color.YELLOW);
-                    }
                 }
-                
-             
+                if(token!=token.BLANK && token!=token.NEWLINE)
+                    ResultadoConsola = ResultadoConsola + String.format("%1$-" + 50 + "s", lexer.lexeme)  + "line " +lexer.lineNumber+" cols "+lexer.chars+ "-" +((int)lexer.chars+(int)lexer.lexeme.length()) + " is " + ((token==Token.NEWLINE)? ":": token.toString()) + "\n";
+
                 ResultadoArchivoSalida += lexer.lexeme;
                 doc.insertString(doc.getLength(), lexer.lexeme,style);
                 StyleConstants.setBold(style, false);
