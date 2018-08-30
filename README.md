@@ -22,8 +22,8 @@ Ubicarse en la carpeta ```src``` del proyecto y ejecutar el comando:
 ```
 java -cp minic.jar;lib/*;. php.scanner.miniPHP
 ```
-Este comando se encarga de ejecutar ``` miniPHP.jar``` junto a sus dependencias.
-Al ejecutar el programa  ```miniPHP.jar``` se genera el Lexer ``` Lexer.java``` y  se abre ```Interfaz.java``` 
+Este comando se encarga de ejecutar ``` minic.jar``` junto a sus dependencias.
+Al ejecutar el programa  ```minic.jar``` se genera el Lexer ``` Lexer.java``` y  se abre ```Interfaz.java``` 
 
 ### Cargando el archivo *".frag"*
 Un archivo .frag puede ser cargado desde el menú *File* haciendo clic el botón "Abrir" . Después de lo cual se abrirá un cuadro solicitándole abrir el archivo deseado.</br>
