@@ -8,7 +8,7 @@ import static php.scanner.Token.*;
 // Alphabet
 
 escaped = \\n|\\r|\\t|\\v|\\e|\\f|\\\\|\\"$"|\\[0-7]{1,3}|\\xu0-9A-Fa-f]+|\\.
-decimal	= [1-9][0-9]*|0
+decimal	= [0-9][0-9]*|0
 hexadecimal = 0[xX][0-9a-fA-F]+
 label = [a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*
 
@@ -18,8 +18,8 @@ cmp_op = "<"|">"|"<="|">="|"=="|"!="
 log_op = "!"|"&&"|"||"
 ass_op = "="|"+="|"-="|"*="|"/="|"%="
 inc_dec_op = "++"|"--"
-prnthss = "("|")"
-curly = "{"|"}"
+prnthss = "("|")"|"()"|"()"
+curly = "{"|"}"|"{}"|"{}"
 bracket = "["|"]"|"[]"
 semicolon = ";"
 comma = ","|"."
