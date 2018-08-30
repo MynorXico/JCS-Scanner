@@ -123,7 +123,7 @@ public class Interfaz extends javax.swing.JFrame {
 
         jLabel5.setFont(new java.awt.Font("Calibri", 1, 24)); // NOI18N
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel5.setText("Corrected C# File");
+        jLabel5.setText("Analyzed C# File");
 
         jMenu1.setText("File");
 
@@ -161,9 +161,9 @@ public class Interfaz extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(19, 19, 19)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 545, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(84, 84, 84)
+                        .addGap(117, 117, 117)
                         .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 569, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 53, Short.MAX_VALUE)))
+                        .addGap(0, 20, Short.MAX_VALUE)))
                 .addContainerGap())
             .addGroup(layout.createSequentialGroup()
                 .addGap(158, 158, 158)
@@ -252,7 +252,7 @@ public class Interfaz extends javax.swing.JFrame {
     public void LoadFile() throws FileNotFoundException, IOException, BadLocationException{
         // File Choosing
         final JFileChooser fc = new JFileChooser();
-        FileNameExtensionFilter asmFilter = new FileNameExtensionFilter(".php files (*.php)", "php");
+        FileNameExtensionFilter asmFilter = new FileNameExtensionFilter(".frag files (*.frag)", "frag");
         fc.addChoosableFileFilter(asmFilter);
         fc.setFileFilter(asmFilter);
         fc.showOpenDialog(this);
@@ -330,18 +330,23 @@ public class Interfaz extends javax.swing.JFrame {
         String ResultadoArchivoSalida = "";
         int errores = 0;
         Style style = jTextPane1.addStyle("", null);
+        Token previousToken = null;
         while(true){
             Token token = lexer.yylex();
             if(token == null){
                 ResultadoConsola = ResultadoConsola+"EOF";
                 jTextArea1.setText(ResultadoConsola);
+                
                 break;
             }
-            if(token == Token.ERROR){
+            if(token == Token.COMMENT){
+                
+            }
+            else if(token == Token.ERROR){
                 // En caso de error
                 errores++;                
-                ResultadoArchivoErrores +=lexer.lineNumber + ":"+ lexer.chars + "\tNot valid token:'"+lexer.lexeme+"'\n";
-                ResultadoConsola = ResultadoConsola + "*** Error line " + lexer.lineNumber +". *** Unrecognized : " +lexer.lexeme + "\n";
+                ResultadoArchivoErrores +=(lexer.lineNumber+1) + ":"+ lexer.chars + "\tNot valid token:'"+lexer.lexeme+"'\n";
+                ResultadoConsola = ResultadoConsola + "*** Error line " + (lexer.lineNumber+1) +". \n*** Unrecognized char: " +lexer.lexeme + "\n\n";
                 Document doc = jTextPane1.getDocument();
                 StyleConstants.setBackground(style,Color.RED);
                 doc.insertString(doc.getLength(), lexer.lexeme,style);
@@ -349,7 +354,10 @@ public class Interfaz extends javax.swing.JFrame {
             else{
                 Document doc = jTextPane1.getDocument();
                 if(token == Token.T_IDENTIFIER){
-                    
+                    if(lexer.lexeme.length() > 31){
+                        lexer.lexeme = lexer.lexeme.substring(0,31) + " - TRUNCATED IDENTIFIER (Length is greater than 31";
+                    }                   
+                    StyleConstants.setForeground(style,Color.BLACK);
                 }
                 else if(token == Token.VARID){
                     StyleConstants.setForeground(style, new Color(0x5C, 0X35, 0X66));
@@ -371,7 +379,7 @@ public class Interfaz extends javax.swing.JFrame {
                     StyleConstants.setForeground(style, new Color(0xAE, 0x81, 0xFF));
                 }else if(token == Token.COMMENT){
                     StyleConstants.setForeground(style, new Color(0xC4, 0xA0, 0x00));
-                }else if(token == Token.PHP){
+                }else if(token == Token.T_IDENTIFIER){
                     StyleConstants.setForeground(style, Color.LIGHT_GRAY);
                 }else if(token == Token.DB){
                     StyleConstants.setForeground(style, Color.ORANGE);
@@ -382,15 +390,29 @@ public class Interfaz extends javax.swing.JFrame {
                 }else if(token == Token.LOGOP){
                     String content = lexer.lexeme;
                 }
-                if(token!=token.BLANK && token!=token.NEWLINE)
-                    ResultadoConsola = ResultadoConsola + String.format("%1$-" + 50 + "s", lexer.lexeme)  + "line " +lexer.lineNumber+" cols "+lexer.chars+ "-" +((int)lexer.chars+(int)lexer.lexeme.length()) + " is " + ((token==Token.NEWLINE)? ":": token.toString()) + "\n";
-
-                ResultadoArchivoSalida += lexer.lexeme;
+                if(token!=token.BLANK && token!=token.NEWLINE && token != token.TWONEWLINE){
+                    if(token!=token.ERROR_COMMENT)
+                        ResultadoConsola = ResultadoConsola + String.format("%1$-" + 13 + "s", lexer.lexeme+" ")  + "line " +(lexer.lineNumber+1)+" cols "+((int)lexer.chars-(int)lexer.lexeme.length()+1)+ "-" +lexer.chars + " is " + ((token==Token.NEWLINE)? ":": token.toString()) + "\n\n";               
+                    else{
+                        ResultadoConsola = ResultadoConsola + " *** FATAL ERROR (UNCLOSED COMMENT) line " + (lexer.lineNumber+1)+" cols " + lexer.chars + " *** \n\n";
+                        ResultadoArchivoSalida += lexer.lexeme;
+                        doc.insertString(doc.getLength(), lexer.lexeme,style);
+                        StyleConstants.setBold(style, false);
+                        StyleConstants.setBackground(style, Color.WHITE);
+                        StyleConstants.setForeground(style, Color.black);
+                        ResultadoConsola = ResultadoConsola+"EOF";
+                        jTextArea1.setText(ResultadoConsola);
+                        break;
+                    }
+                }else if(token==token.TWONEWLINE || (token == token.NEWLINE && (previousToken == token.NEWLINE || previousToken == token.TWONEWLINE))){
+                    //lexer.yyline = lexer.yyline-1;
+                }
                 doc.insertString(doc.getLength(), lexer.lexeme,style);
                 StyleConstants.setBold(style, false);
                 StyleConstants.setBackground(style, Color.WHITE);
                 StyleConstants.setForeground(style, Color.black);
             }
+            previousToken = token;
         
                
         }
