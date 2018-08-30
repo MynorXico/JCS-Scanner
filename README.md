@@ -7,7 +7,7 @@ Proyecto No. 1</br>
 El proyecto consiste en un analizador léxico para el lenguaje PHP utilizando la herramienta JFlex.
 ## Manual de Usuario
 
-A continuación se describe la forma de uso del software "miniPHP". El uso del mismo se divide en varias etapas:
+A continuación se describe la forma de uso del software "miniCS". El uso del mismo se divide en varias etapas:
 
  - Iniciando la aplicación
  - Cargando archivo .frag
