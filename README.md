@@ -1,6 +1,6 @@
 
 Universidad Rafael Landívar</br>
-Lenguajes Formales y Autómatas</br>
+Compiladores </br>
 Proyecto No. 1</br>
 
 # Analizador Léxico
