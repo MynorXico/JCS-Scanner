@@ -4,7 +4,7 @@ Compiladores </br>
 Proyecto No. 1</br>
 
 # Analizador Léxico
-El proyecto consiste en un analizador léxico para el lenguaje PHP utilizando la herramienta JFlex.
+El proyecto consiste en un analizador léxico para el lenguaje C# utilizando la herramienta JFlex.
 ## Manual de Usuario
 
 A continuación se describe la forma de uso del software "miniCS". El uso del mismo se divide en varias etapas:
