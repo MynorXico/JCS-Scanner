@@ -1,10 +1,13 @@
 package php.scanner;
-
+package java_cup.runtime;
 import static php.scanner.Token.*;
 %%
 %class Lexer
 %type Token
 %line
+%implements java_cup.runtime.Scanner
+%function next_token
+%type java_cup.runtime.Symbol
 // Alphabet
 
 escaped = \\n|\\r|\\t|\\v|\\e|\\f|\\\\|\\"$"|\\[0-7]{1,3}|\\xu0-9A-Fa-f]+|\\.
@@ -98,3 +101,4 @@ void            {chars += yytext().length(); lexeme=yytext(); lineNumber=yyline;
 {comma}         {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return T_PUNCTUATION;}
 {multiline_error}  {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return ERROR_COMMENT;}
 .|"=!=" {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return ERROR;}
+
