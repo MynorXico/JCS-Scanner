@@ -1,13 +1,13 @@
 
 Universidad Rafael Landívar</br>
 Compiladores </br>
-Proyecto No. 1</br>
+Proyecto No. 2</br>
 
 # Analizador Léxico
-El proyecto consiste en un analizador léxico para el lenguaje C# utilizando la herramienta JFlex.
+El proyecto consiste en un analizador sintáctico para el lenguaje DECAF utilizando la herramienta JFlex.
 ## Manual de Usuario
 
-A continuación se describe la forma de uso del software "miniCS". El uso del mismo se divide en varias etapas:
+A continuación se describe la forma de uso del software "DECAF". El uso del mismo se divide en varias etapas:
 
  - Iniciando la aplicación
  - Cargando archivo .frag
@@ -23,7 +23,7 @@ Ubicarse en la carpeta ```src``` del proyecto y ejecutar el comando:
 java -cp minic.jar;lib/*;. php.scanner.miniPHP
 ```
 Este comando se encarga de ejecutar ``` minic.jar``` junto a sus dependencias.
-Al ejecutar el programa  ```minic.jar``` se genera el Lexer ``` Lexer.java``` y  se abre ```Interfaz.java``` 
+Al ejecutar el programa  ```minic.jar``` se genera el Lexer ``` Lexer.java``` ,  ``` Parser.java ```el parser  y  se abre ```Interfaz.java``` 
 
 ### Cargando el archivo *".frag"*
 Un archivo .frag puede ser cargado desde el menú *File* haciendo clic el botón "Abrir" . Después de lo cual se abrirá un cuadro solicitándole abrir el archivo deseado.</br>
@@ -34,7 +34,7 @@ Inmediatamente después de haber abierto el archivo, se llenará un jTextArea
 El jTextArea contendrá el código C# sin modificaciones.
 
 ### Analizando el archivo
-Para realizar en análisis léxico del archivo, basta con hacer clic sobre el botón con la etiqueta "Analize".
+Para realizar en análisis sintáctico del archivo, basta con hacer clic sobre el botón con la etiqueta "Analize".
 #### Errores no corregibles:
 En caso de que el archivo de entrada contenga errores que no pueden ser corregidos, se muestra un cuadro de diálogo.</br>
 
