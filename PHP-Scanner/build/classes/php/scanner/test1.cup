@@ -4,6 +4,9 @@ package php.scanner;
 
 import java_cup.runtime.*;
 import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.text.BadLocationException;
 // Opciones y Declaraciones
 
 
@@ -19,26 +22,24 @@ parser code
         int fila = s.right;
         int columna = s.left;
 
-        System.out.println("Error Sintáctico");
-        System.out.println("\tLexema: " + lexema);
-        System.out.println("\tFila: " + fila);
-        System.out.println("\tColumna: " + columna);
-
-        TError datos = new TError(lexema, fila, columna, "Error Sintactico", "Not expected token");
-        TablaES.add(datos);
+        try {
+          Interfaz.getInterfaz().AddTextToJTextArea("Error Sintáctico. Lexema: "+lexema+"\tFila: " + fila + "\tColumna: "+ columna+"\n");
+        } catch (BadLocationException ex) {
+            System.out.println("Error escribiendo");
+            Logger.getLogger(parser.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{
         String lexema = s.value.toString();
         int fila = s.right;
         int columna = s.left;
         
-        System.out.println("Error Sintáctico :S");
-        System.out.println("\tLexema: " + lexema);
-        System.out.println("\tFila: " + fila);
-        System.out.println("\tColumna: " + columna);
-
-        TError datos = new TError(lexema, fila, columna, "Error Sintactico", "Not expected token");
-        TablaES.add(datos);
+        try {
+          Interfaz.getInterfaz().AddTextToJTextArea("Error Sintáctico. Lexema: "+lexema+"\tFila: " + fila + "\tColumna: "+ columna+"\n");
+        } catch (BadLocationException ex) {
+            System.out.println("Error escribiendo");
+            Logger.getLogger(parser.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 :}  

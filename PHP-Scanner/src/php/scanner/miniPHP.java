@@ -10,13 +10,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import javax.swing.text.BadLocationException;
 import javax.tools.*;
 /**
  *
  * @author Maynor
  */
 public class miniPHP {
-    public static void main(String[] args) throws IOException{
+    public static void main(String[] args) throws IOException, BadLocationException{
         String root = new File(".").getCanonicalPath();
         String sourcePath = root + "\\src\\php\\scanner\\";
         
@@ -37,12 +38,12 @@ public class miniPHP {
             System.out.println(new BufferedReader(new InputStreamReader(Runtime.getRuntime().exec(command).getInputStream())).readLine());       
         }catch(Exception e){
             
-        }       
+        }
+        Interfaz.getInterfaz().show();
     }
     
     public static void generarLexer(String path){
         File file = new File(path);
-        jflex.Main.generate(file);
-        
+        jflex.Main.generate(file);        
     }
 }

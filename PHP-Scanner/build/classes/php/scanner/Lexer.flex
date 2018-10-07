@@ -2,7 +2,9 @@ package php.scanner;
 import java_cup.runtime.Symbol;
 import static php.scanner.Token.*;
 import java.util.LinkedList;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.text.BadLocationException;
 
 %%
 %{
@@ -167,7 +169,11 @@ void            {chars += yytext().length(); lexeme=yytext(); lineNumber=yyline;
 {multiline_error}  {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; System.out.println("Error Lexico"+yytext()+" Linea "+yyline+" Columna "+yycolumn);
                           TError datos = new TError(yytext(),yyline,yycolumn,"Error Lexico","Simbolo no existe en el lenguaje");
                           TablaEL.add(datos);}
-.|"=!=" {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; System.out.println("Error Lexico"+yytext()+" Linea "+yyline+" Columna "+yycolumn);
-                          TError datos = new TError(yytext(),yyline,yycolumn,"Error Lexico","Simbolo no existe en el lenguaje");
-                          TablaEL.add(datos);}
+.|"=!=" {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; System.out.println("Error Léxico"+yytext()+" Linea "+yyline+" Columna "+yycolumn);
+                          try {
+                            Interfaz.getInterfaz().AddTextToJTextArea("Error Léxico. Lexema: "+lexeme+"\tFila: " + yyline + "\tColumna: "+ yycolumn+"\n");
+                          } catch (BadLocationException ex) {
+                              System.out.println("Error escribiendo");
+                              Logger.getLogger(parser.class.getName()).log(Level.SEVERE, null, ex);
+                          }}
 

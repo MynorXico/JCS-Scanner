@@ -55,6 +55,14 @@ public class Interfaz extends javax.swing.JFrame {
 
     }
 
+    private static Interfaz interfazUnica;
+    
+    public static Interfaz getInterfaz() throws BadLocationException{
+        if(interfazUnica == null){
+            interfazUnica = new Interfaz();
+        }
+        return interfazUnica;
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -238,7 +246,7 @@ public class Interfaz extends javax.swing.JFrame {
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
+    public static void main(String args[]) throws BadLocationException {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -263,15 +271,7 @@ public class Interfaz extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    new Interfaz().setVisible(true);
-                } catch (BadLocationException ex) {
-                    java.util.logging.Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
-        });
+        Interfaz.getInterfaz().show();
     }
     
     public void probarLexerFile(String filename) throws IOException, BadLocationException, Exception{
@@ -299,14 +299,7 @@ public class Interfaz extends javax.swing.JFrame {
         }catch(Exception e){
             System.out.println("Terminó el análisis con errores jeje");          
         }
-        System.out.println("*************************************");        
-        for(int i = 0; i < p.TablaES.size();i++){
-            consola += "Error Sintáctico. Símbolo: " + p.TablaES.get(i).lexema + " , Línea: " + p.TablaES.get(i).linea + ", Columna: " + p.TablaES.get(i).columna+"\n";
-        }
-        for(int i = 0; i < lexer.TablaEL.size() ; i++){
-            consola += "Error Léxico. Símbolo: " + lexer.TablaEL.get(i).lexema + " , Línea: " + lexer.TablaEL.get(i).linea + ", Columna: " +  lexer.TablaEL.get(i).columna+"\n";
-        }
-        jTextArea1.setText(consola);
+        
         
         String ResultadoConsola = "";
         String ResultadoArchivoErrores = "";
@@ -320,6 +313,9 @@ public class Interfaz extends javax.swing.JFrame {
         this.probarLexerFile(filePath);
     }
     
+    public void AddTextToJTextArea(String s){
+        jTextArea1.setText(jTextArea1.getText()+s);
+    }
  
     
     

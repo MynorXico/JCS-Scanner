@@ -4,7 +4,9 @@ package php.scanner;
 import java_cup.runtime.Symbol;
 import static php.scanner.Token.*;
 import java.util.LinkedList;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.text.BadLocationException;
 
 
 /**
@@ -64,15 +66,15 @@ public class Lexer implements java_cup.runtime.Scanner {
     "\1\0\1\1\2\2\1\3\1\4\1\5\1\4\1\6"+
     "\1\7\1\10\2\1\1\11\1\12\1\13\1\14\1\15"+
     "\1\16\1\17\1\20\1\21\7\3\2\22\1\1\5\3"+
-    "\1\23\6\3\1\23\1\2\2\0\1\7\1\1\1\24"+
-    "\1\6\1\0\1\25\1\23\1\26\11\3\1\0\1\27"+
-    "\1\0\1\3\1\30\14\3\1\0\1\31\1\2\2\0"+
-    "\3\3\1\32\4\3\1\33\1\34\14\3\2\31\1\24"+
-    "\1\3\1\35\1\36\1\37\6\3\1\40\10\3\1\41"+
-    "\2\31\6\3\1\42\1\43\1\44\1\3\1\45\5\3"+
-    "\1\31\1\3\1\46\1\47\1\50\3\3\1\51\4\3"+
-    "\1\52\5\3\1\53\1\54\2\3\1\55\1\3\1\56"+
-    "\1\57\2\3\1\60\1\3\1\61";
+    "\1\23\6\3\1\23\1\2\2\0\1\7\1\24\1\25"+
+    "\1\6\1\0\1\26\1\23\1\27\11\3\1\0\1\30"+
+    "\1\0\1\3\1\31\14\3\1\0\1\32\1\2\2\0"+
+    "\3\3\1\33\4\3\1\34\1\35\14\3\2\32\1\25"+
+    "\1\3\1\36\1\37\1\40\6\3\1\41\10\3\1\42"+
+    "\2\32\6\3\1\43\1\44\1\45\1\3\1\46\5\3"+
+    "\1\32\1\3\1\47\1\50\1\51\3\3\1\52\4\3"+
+    "\1\53\5\3\1\54\1\55\2\3\1\56\1\3\1\57"+
+    "\1\60\2\3\1\61\1\3\1\62";
 
   private static int [] zzUnpackAction() {
     int [] result = new int[182];
@@ -818,203 +820,213 @@ public int chars = 0;
       else {
         switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
           case 1: 
+            { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; System.out.println("Error Léxico"+yytext()+" Linea "+yyline+" Columna "+yycolumn);
+                          try {
+                            Interfaz.getInterfaz().AddTextToJTextArea("Error Léxico. Lexema: "+lexeme+"\tFila: " + yyline + "\tColumna: "+ yycolumn+"\n");
+                          } catch (BadLocationException ex) {
+                              System.out.println("Error escribiendo");
+                              Logger.getLogger(parser.class.getName()).log(Level.SEVERE, null, ex);
+                          }
+            }
+          case 51: break;
+          case 2: 
+            { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.intCnst, yycolumn, yyline, yytext());
+            }
+          case 52: break;
+          case 3: 
+            { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.ident, yycolumn, yyline, yytext());
+            }
+          case 53: break;
+          case 4: 
+            { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.arop, yycolumn, yyline, yytext());
+            }
+          case 54: break;
+          case 5: 
+            { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.minus, yycolumn, yyline, yytext());
+            }
+          case 55: break;
+          case 6: 
+            { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.cmpop, yycolumn, yyline, yytext());
+            }
+          case 56: break;
+          case 7: 
+            { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.equals, yycolumn, yyline, yytext());
+            }
+          case 57: break;
+          case 8: 
+            { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.neg, yycolumn, yyline, yytext());
+            }
+          case 58: break;
+          case 9: 
+            { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.prnthss_A, yycolumn, yyline, yytext());
+            }
+          case 59: break;
+          case 10: 
+            { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.prnthss_C, yycolumn, yyline, yytext());
+            }
+          case 60: break;
+          case 11: 
+            { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.curly_A, yycolumn, yyline, yytext());
+            }
+          case 61: break;
+          case 12: 
+            { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.curly_C, yycolumn, yyline, yytext());
+            }
+          case 62: break;
+          case 13: 
+            { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.brackets_A, yycolumn, yyline, yytext());
+            }
+          case 63: break;
+          case 14: 
+            { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.brackets_C, yycolumn, yyline, yytext());
+            }
+          case 64: break;
+          case 15: 
+            { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.pyc, yycolumn, yyline, yytext());
+            }
+          case 65: break;
+          case 16: 
+            { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.comma, yycolumn, yyline, yytext());
+            }
+          case 66: break;
+          case 17: 
+            { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.dot, yycolumn, yyline, yytext());
+            }
+          case 67: break;
+          case 18: 
+            { chars = 0; lineNumber=yyline; lexeme="\n"; lineNumber = yyline;
+            }
+          case 68: break;
+          case 19: 
+            { chars += yytext().length(); lexeme=yytext();lineNumber=yyline;
+            }
+          case 69: break;
+          case 20: 
             { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; System.out.println("Error Lexico"+yytext()+" Linea "+yyline+" Columna "+yycolumn);
                           TError datos = new TError(yytext(),yyline,yycolumn,"Error Lexico","Simbolo no existe en el lenguaje");
                           TablaEL.add(datos);
             }
-          case 50: break;
-          case 2: 
-            { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.intCnst, yycolumn, yyline, yytext());
-            }
-          case 51: break;
-          case 3: 
-            { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.ident, yycolumn, yyline, yytext());
-            }
-          case 52: break;
-          case 4: 
-            { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.arop, yycolumn, yyline, yytext());
-            }
-          case 53: break;
-          case 5: 
-            { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.minus, yycolumn, yyline, yytext());
-            }
-          case 54: break;
-          case 6: 
-            { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.cmpop, yycolumn, yyline, yytext());
-            }
-          case 55: break;
-          case 7: 
-            { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.equals, yycolumn, yyline, yytext());
-            }
-          case 56: break;
-          case 8: 
-            { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.neg, yycolumn, yyline, yytext());
-            }
-          case 57: break;
-          case 9: 
-            { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.prnthss_A, yycolumn, yyline, yytext());
-            }
-          case 58: break;
-          case 10: 
-            { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.prnthss_C, yycolumn, yyline, yytext());
-            }
-          case 59: break;
-          case 11: 
-            { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.curly_A, yycolumn, yyline, yytext());
-            }
-          case 60: break;
-          case 12: 
-            { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.curly_C, yycolumn, yyline, yytext());
-            }
-          case 61: break;
-          case 13: 
-            { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.brackets_A, yycolumn, yyline, yytext());
-            }
-          case 62: break;
-          case 14: 
-            { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.brackets_C, yycolumn, yyline, yytext());
-            }
-          case 63: break;
-          case 15: 
-            { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.pyc, yycolumn, yyline, yytext());
-            }
-          case 64: break;
-          case 16: 
-            { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.comma, yycolumn, yyline, yytext());
-            }
-          case 65: break;
-          case 17: 
-            { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.dot, yycolumn, yyline, yytext());
-            }
-          case 66: break;
-          case 18: 
-            { chars = 0; lineNumber=yyline; lexeme="\n"; lineNumber = yyline;
-            }
-          case 67: break;
-          case 19: 
-            { chars += yytext().length(); lexeme=yytext();lineNumber=yyline;
-            }
-          case 68: break;
-          case 20: 
+          case 70: break;
+          case 21: 
             { chars += yytext().length(); if(yytext().contains("\n")){chars=0; lineNumber=yyline;} lexeme=yytext();
             }
-          case 69: break;
-          case 21: 
+          case 71: break;
+          case 22: 
             { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.logop, yycolumn, yyline, yytext());
             }
-          case 70: break;
-          case 22: 
+          case 72: break;
+          case 23: 
             { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.brackets, yycolumn, yyline, yytext());
             }
-          case 71: break;
-          case 23: 
+          case 73: break;
+          case 24: 
             { chars += yytext().length(); lexeme=yytext(); lineNumber=yyline; return new Symbol(sym.strConst, yycolumn, yyline, yytext());
             }
-          case 72: break;
-          case 24: 
+          case 74: break;
+          case 25: 
             { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.t_if, yycolumn, yyline, yytext());
             }
-          case 73: break;
-          case 25: 
+          case 75: break;
+          case 26: 
             { chars += yytext().length(); lexeme=yytext(); lineNumber=yyline;return new Symbol(sym.dblConst, yycolumn, yyline, yytext());
             }
-          case 74: break;
-          case 26: 
+          case 76: break;
+          case 27: 
             { chars += yytext().length(); lexeme=yytext(); lineNumber=yyline; return new Symbol(sym.t_new, yycolumn, yyline, yytext());
             }
-          case 75: break;
-          case 27: 
+          case 77: break;
+          case 28: 
             { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.t_for, yycolumn, yyline, yytext());
             }
-          case 76: break;
-          case 28: 
+          case 78: break;
+          case 29: 
             { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.t_int, yycolumn, yyline, yytext());
             }
-          case 77: break;
-          case 29: 
+          case 79: break;
+          case 30: 
             { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.t_else, yycolumn, yyline, yytext());
             }
-          case 78: break;
-          case 30: 
+          case 80: break;
+          case 31: 
             { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.t_this, yycolumn, yyline, yytext());
             }
-          case 79: break;
-          case 31: 
+          case 81: break;
+          case 32: 
             { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.t_null, yycolumn, yyline, yytext());
             }
-          case 80: break;
-          case 32: 
+          case 82: break;
+          case 33: 
             { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.t_bool, yycolumn, yyline, yytext());
             }
-          case 81: break;
-          case 33: 
+          case 83: break;
+          case 34: 
             { chars += yytext().length(); lexeme=yytext(); lineNumber=yyline; return new Symbol(sym.t_void, yycolumn, yyline, yytext());
             }
-          case 82: break;
-          case 34: 
+          case 84: break;
+          case 35: 
             { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.t_break, yycolumn, yyline, yytext());
             }
-          case 83: break;
-          case 35: 
+          case 85: break;
+          case 36: 
             { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.clase, yycolumn, yyline, yytext());
             }
-          case 84: break;
-          case 36: 
+          case 86: break;
+          case 37: 
             { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.t_while, yycolumn, yyline, yytext());
             }
-          case 85: break;
-          case 37: 
+          case 87: break;
+          case 38: 
             { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.print, yycolumn, yyline, yytext());
             }
-          case 86: break;
-          case 38: 
+          case 88: break;
+          case 39: 
             { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.t_double, yycolumn, yyline, yytext());
             }
-          case 87: break;
-          case 39: 
+          case 89: break;
+          case 40: 
             { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.t_string, yycolumn, yyline, yytext());
             }
-          case 88: break;
-          case 40: 
+          case 90: break;
+          case 41: 
             { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.t_return, yycolumn, yyline, yytext());
             }
-          case 89: break;
-          case 41: 
+          case 91: break;
+          case 42: 
             { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.malloc, yycolumn, yyline, yytext());
             }
-          case 90: break;
-          case 42: 
+          case 92: break;
+          case 43: 
             { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.extend, yycolumn, yyline, yytext());
             }
-          case 91: break;
-          case 43: 
+          case 93: break;
+          case 44: 
             { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.getByte, yycolumn, yyline, yytext());
             }
-          case 92: break;
-          case 44: 
+          case 94: break;
+          case 45: 
             { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.setByte, yycolumn, yyline, yytext());
             }
-          case 93: break;
-          case 45: 
+          case 95: break;
+          case 46: 
             { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.t_newArr, yycolumn, yyline, yytext());
             }
-          case 94: break;
-          case 46: 
+          case 96: break;
+          case 47: 
             { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.ReadLine, yycolumn, yyline, yytext());
             }
-          case 95: break;
-          case 47: 
+          case 97: break;
+          case 48: 
             { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.t_interface, yycolumn, yyline, yytext());
             }
-          case 96: break;
-          case 48: 
+          case 98: break;
+          case 49: 
             { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.t_implements, yycolumn, yyline, yytext());
             }
-          case 97: break;
-          case 49: 
+          case 99: break;
+          case 50: 
             { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.readInteger, yycolumn, yyline, yytext());
             }
-          case 98: break;
+          case 100: break;
           default:
             zzScanError(ZZ_NO_MATCH);
         }
