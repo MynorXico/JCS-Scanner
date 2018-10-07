@@ -47,7 +47,7 @@ parser code
 
 
 terminal          minus,arop, cmpop, logop,ident,pyc,t_int,t_double,t_bool, t_string, bolCnst,strConst,brackets,t_void,prnthss_A,prnthss_C,comma,clase,t_implements,t_interface,
-                  t_if, t_else,t_for,t_while,t_return,t_break,print,t_this,prnthss,brackets_A,brackets_C,neg,malloc,readInteger,
+                  t_if, t_else,t_for,t_while,t_return,t_break,print,t_this,brackets_A,brackets_C,neg,malloc,readInteger,
                   ReadLine,dot,dblConst,intCnst,t_null,t_newArr,getByte,setByte, equals, curly_A, curly_C, extend, t_new;
    
 
@@ -179,8 +179,8 @@ start with Program;
              neg Expr|
              t_new prnthss_A ident prnthss_C|
              t_newArr prnthss_A Expr comma Type prnthss_C|
-             readInteger prnthss|
-             ReadLine prnthss|
+             readInteger prnthss_A prnthss_C|
+             ReadLine prnthss_A prnthss_C|
              malloc prnthss_A Expr prnthss_C 
     ;
     LValue ::= ident|

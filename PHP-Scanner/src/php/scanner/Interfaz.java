@@ -313,12 +313,7 @@ public class Interfaz extends javax.swing.JFrame {
         String ResultadoArchivoSalida = "";
         int errores = 0;
         Token previousToken = null;
-        
-        File outputFile = new File(filePath+".out");
-        PrintWriter writer;
-        writer = new PrintWriter(outputFile);
-        writer.print(ResultadoConsola);
-        writer.close();
+      
         
     }
     public void validarArchivo(String filePath) throws FileNotFoundException, IOException, BadLocationException, Exception{

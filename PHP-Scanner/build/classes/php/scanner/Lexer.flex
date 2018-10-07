@@ -141,11 +141,9 @@ void            {chars += yytext().length(); lexeme=yytext(); lineNumber=yyline;
 [\n]|[\r\n]|[\n\r]            {chars = 0; lineNumber=yyline; lexeme="\n"; lineNumber = yyline;}
 {blank}{blank}+  {chars = 0; lineNumber=yyline; lexeme="\n"; lineNumber = yyline;}
 {ass_op}        {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.equals, yycolumn, yyline, yytext());}
-{inc_dec_op}    {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.ident, yycolumn, yyline, yytext());}
 {ar_op} 	    {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.arop, yycolumn, yyline, yytext());}
 {cmp_op}	    {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.cmpop, yycolumn, yyline, yytext());}
 {log_op}        {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.logop, yycolumn, yyline, yytext());}
-{prnthss}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.prnthss, yycolumn, yyline, yytext());}
 {prnthss_A}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.prnthss_A, yycolumn, yyline, yytext());}
 {prnthss_C}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.prnthss_C, yycolumn, yyline, yytext());}
 
