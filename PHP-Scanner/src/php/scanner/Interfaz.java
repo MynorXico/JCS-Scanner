@@ -304,7 +304,7 @@ public class Interfaz extends javax.swing.JFrame {
             consola += "Error Sintáctico. Símbolo: " + p.TablaES.get(i).lexema + " , Línea: " + p.TablaES.get(i).linea + ", Columna: " + p.TablaES.get(i).columna+"\n";
         }
         for(int i = 0; i < lexer.TablaEL.size() ; i++){
-            consola += "Error Léxico. Símbolo: " + lexer.TablaEL.get(i).lexema + " , Línea: " + p.TablaES.get(i).linea + ", Columna: " + p.TablaES.get(i).columna+"\n";
+            consola += "Error Léxico. Símbolo: " + lexer.TablaEL.get(i).lexema + " , Línea: " + lexer.TablaEL.get(i).linea + ", Columna: " +  lexer.TablaEL.get(i).columna+"\n";
         }
         jTextArea1.setText(consola);
         
