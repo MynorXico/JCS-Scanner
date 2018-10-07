@@ -1,59 +1,200 @@
-// CUP specification for a simple expression evaluator (no actions)
+// CUP spect_ification t_for a simple expression evaluator (no actions)
 package php.scanner;
 
 
 import java_cup.runtime.*;
+import java.util.LinkedList;
+// Opciones y Declaraciones
 
 
 
-/* Terminals (tokens returned by the scanner). */
-terminal            SEMI, PLUS, MINUS, TIMES, DIVIDE, MOD;
-terminal        	UMINUS, LPAREN, RPAREN;
-terminal Integer	NUMBER;
-
-/* Non terminals */
-non terminal			expr_list, expr_part;
-non terminal Integer	expr, term, factor;
-
-/* Precedences */
-precedence left PLUS, MINUS;
-precedence left TIMES, DIVIDE, MOD;
-precedence left UMINUS;
-
-/* The grammar */
-expr_list   ::= expr_list expr_part 
-                |
-                expr_part;
-
-expr_part   ::= expr:e
-                {: System.out.println("= " + e); :}
-                SEMI;
+// Parser Code
+parser code
+{:
+    public LinkedList<TError> TablaES = new LinkedList<TError>();
 
 
+    public void sintax_error(Symbol s){
+        String lexema = s.value.toString();
+        int fila = s.right;
+        int columna = s.left;
+
+        System.out.println("Error Sintáctico");
+        System.out.println("\tLexema: " + lexema);
+        System.out.println("\tFila: " + fila);
+        System.out.println("\tColumna: " + columna);
+
+        TError datos = new TError(lexema, fila, columna, "Error Sintactico", "Not expected token");
+        TablaES.add(datos);
+    }
+    public void unrecovered_syntax_error(Symbol s) throws java.lang.Exception{
+        String lexema = s.value.toString();
+        int fila = s.right;
+        int columna = s.left;
+        
+        System.out.println("Error Sintáctico :S");
+        System.out.println("\tLexema: " + lexema);
+        System.out.println("\tFila: " + fila);
+        System.out.println("\tColumna: " + columna);
+
+        TError datos = new TError(lexema, fila, columna, "Error Sintactico", "Not expected token");
+        TablaES.add(datos);
+    }
+
+:}
 
 
-expr      ::= expr:e1 PLUS expr:e2    
-	      {: RESULT = new Integer(e1.intValue() + e2.intValue()); :} 
-	      | 
-              expr:e1 MINUS expr:e2    
-              {: RESULT = new Integer(e1.intValue() - e2.intValue()); :} 
-	      | 
-              expr:e1 TIMES expr:e2 
-	      {: RESULT = new Integer(e1.intValue() * e2.intValue()); :} 
-	      | 
-              expr:e1 DIVIDE expr:e2 
-	      {: RESULT = new Integer(e1.intValue() / e2.intValue()); :} 
-	      | 
-              expr:e1 MOD expr:e2 
-	      {: RESULT = new Integer(e1.intValue() % e2.intValue()); :} 
-	      | 
-              NUMBER:n                 
-	      {: RESULT = n; :} 
-	      | 
-              MINUS expr:e             
-	      {: RESULT = new Integer(0 - e.intValue()); :} 
-	      %prec UMINUS
-	      | 
-              LPAREN expr:e RPAREN     
-	      {: RESULT = e; :} 
-	      ;
+
+
+terminal          minus,arop, logop,ident,pyc,t_int,t_double,t_bool, t_string, bolCnst,strConst,brackets,t_void,prnthss_A,prnthss_C,comma,clase,t_implements,t_interface,
+                  t_if, t_else,t_for,t_while,t_return,t_break,print,t_this,prnthss,brackets_A,brackets_C,neg,malloc,readInteger,
+                  ReadLine,dot,dblConst,intCnst,t_null,t_newArr,getByte,setByte, equals, curly_A, curly_C, extend, t_new;
+   
+
+
+/* No terminales usados en la seccion gramatical. */
+non terminal Object     Arlogop, Program, Decl, VariableDecl,FunctionDecl,ClassDecl, DeclStar, InterfaceDecl,Variable,Type,Formals,StmtBlock,Field,
+                        ExtendsIdentOptional,ImplementsIdentPlusCommaOptional,Prototype,Stmt,Expr,IfStmt,WhileStmt,ForStmt,BreakStmt,ReturnStmt,PrintStmt,FieldStar,
+                        VariableDeclStar,StmtStar,LValue,Constant,Call,Actuals,LibCall,
+                         PrototypeStar, ExprOptional, elseStmtOptional, IdentList, ExprList;
+
+
+precedence left equals;
+precedence left logop;
+precedence left arop;
+precedence left neg, minus;
+precedence left brackets_A, dot;
+precedence left prnthss_A;
+precedence left t_else;
+precedence left ident;
+
+
+start with Program;
+
+
+
+//GRAMATICA   
+    Arlogop ::= arop|logop;
+    Program ::= Decl DeclStar
+    ;
+    Decl ::= VariableDecl|
+             FunctionDecl|
+             ClassDecl|
+             InterfaceDecl
+    ;
+    DeclStar ::= |Decl DeclStar;
+    
+    VariableDecl ::= Variable pyc
+    ;
+    Variable ::= Type ident
+    ;
+    Type ::= t_int|
+             t_double|
+             t_bool|
+             t_string|
+             ident|
+             Type brackets
+    ;
+    FunctionDecl ::= Type ident	prnthss_A Formals prnthss_C StmtBlock|
+                    t_void ident prnthss_A Formals prnthss_C StmtBlock
+    ;
+    Formals ::= Variable|
+                Formals comma Variable
+    ;
+
+    ClassDecl ::= clase ident ExtendsIdentOptional ImplementsIdentPlusCommaOptional curly_A FieldStar curly_C		
+    ;
+    FieldStar ::= Field FieldStar|
+    ;
+    ExtendsIdentOptional ::= extend ident |
+    ;
+    ImplementsIdentPlusCommaOptional ::= t_implements IdentList |
+    ;
+
+    IdentList   ::= ident|
+                    IdentList comma ident;
+
+
+    Field::= VariableDecl|
+             FunctionDecl
+    ;
+    InterfaceDecl ::= t_interface ident curly_A PrototypeStar curly_C
+    ;
+    PrototypeStar ::= Prototype PrototypeStar|;
+    Prototype ::= Type ident prnthss_A Formals prnthss_C pyc|
+                  t_void ident prnthss_A Formals prnthss_C pyc
+    ;
+    Stmt ::= ExprOptional pyc|
+                    IfStmt|
+                    WhileStmt|
+                    ForStmt|
+                    BreakStmt|
+                    ReturnStmt|
+                    PrintStmt|
+                    StmtBlock
+    ;
+    ExprOptional    ::= Expr|;
+    StmtBlock ::= curly_A VariableDeclStar StmtStar curly_C
+    ;
+    IfStmt ::= t_if prnthss_A Expr prnthss_C Stmt elseStmtOptional
+    ;
+    elseStmtOptional    ::= t_else Stmt | ;
+
+    
+    VariableDeclStar ::= VariableDecl VariableDeclStar|
+    ;
+    StmtStar ::= Stmt StmtStar | 
+    ;
+    WhileStmt ::= t_while prnthss_A Expr prnthss_C Stmt										
+    ;
+    ForStmt ::= t_for prnthss_A ExprOptional pyc Expr pyc ExprOptional prnthss_C Stmt
+    ;
+    ReturnStmt ::= t_return ExprOptional pyc
+    ;
+    BreakStmt ::= t_break pyc
+    ;
+    PrintStmt ::= print prnthss_A Expr ExprList prnthss_C pyc
+    ;
+    
+    
+    ExprOptional    ::= Expr|;
+
+    Expr ::= LValue equals Expr|
+             Constant|
+             LValue|
+             t_this|
+             Call|
+             prnthss_A Expr prnthss_C|
+             Expr Arlogop Expr|
+             minus Expr|
+             neg Expr|
+             t_new prnthss_A ident prnthss_C|
+             t_newArr prnthss_A Expr comma Type prnthss_C|
+             readInteger prnthss|
+             ReadLine prnthss|
+             malloc prnthss_A Expr prnthss_C 
+    ;
+    LValue ::= ident|
+               Expr dot ident|
+               Expr brackets_A Expr brackets_C
+    ;
+    Call ::= ident prnthss_A Actuals prnthss_C|
+             Expr dot ident prnthss_A Actuals prnthss_C|
+             Expr dot LibCall prnthss_A Actuals prnthss_C
+    ;
+    LibCall ::= getByte prnthss_A Expr prnthss_C|
+                setByte prnthss_A Expr comma Expr prnthss_C
+    ;
+    Actuals ::= ExprList|
+    ;
+
+    ExprList    ::= Expr|
+                    ExprList comma Expr;
+
+    Constant ::= intCnst|
+                 dblConst|
+                 bolCnst|
+                 strConst|
+                 t_null
+    ;
+    

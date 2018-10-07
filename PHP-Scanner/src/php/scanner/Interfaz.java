@@ -198,12 +198,10 @@ public class Interfaz extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        try {  
+        try {
             this.Analyze();
-        } catch (FileNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (BadLocationException ex) {
-            java.util.logging.Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (Exception ex) {
+            Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -233,7 +231,7 @@ public class Interfaz extends javax.swing.JFrame {
         new File(sourcePath+"Lexer.java").delete();
         new File(sourcePath+"Token.class").delete();
     }//GEN-LAST:event_formWindowClosed
-    public void Analyze() throws FileNotFoundException, BadLocationException{
+    public void Analyze() throws FileNotFoundException, BadLocationException, Exception{
         jTextPane1.setStyledDocument(new DefaultStyledDocument());
         long start = 0;
         long end = 0;
@@ -311,7 +309,7 @@ public class Interfaz extends javax.swing.JFrame {
         });
     }
     
-    public void probarLexerFile(String filename) throws IOException, BadLocationException{
+    public void probarLexerFile(String filename) throws IOException, BadLocationException, Exception{
         /*
         File fichero = new File("fichero.txt");
         PrintWriter writer;
@@ -325,98 +323,30 @@ public class Interfaz extends javax.swing.JFrame {
         */
         Reader reader = new BufferedReader(new FileReader(filename));
         Lexer lexer = new Lexer(reader);
-        Parser par = new Parser()
+        parser p = new parser(lexer);
+        
+        
+        try{
+            System.out.println("*************************************");        
+       
+            p.parse();
+            System.out.println("Terminó exitosamente el análisis");        
+        }catch(Exception e){
+            System.out.println("Terminó el análisis con errores jeje");          
+        }
+        System.out.println("*************************************");        
+        for(int i = 0; i < p.TablaES.size();i++){
+            System.out.println("Error en " +p.TablaES.get(i).lexema);
+        }
+            
+        
         String ResultadoConsola = "";
         String ResultadoArchivoErrores = "";
         String ResultadoArchivoSalida = "";
         int errores = 0;
         Style style = jTextPane1.addStyle("", null);
         Token previousToken = null;
-        while(true){
-            Token token = lexer.yylex();
-            if(token == null){
-                ResultadoConsola = ResultadoConsola+"EOF";
-                jTextArea1.setText(ResultadoConsola);
-                
-                break;
-            }
-            if(token == Token.COMMENT){
-                
-            }
-            else if(token == Token.ERROR){
-                // En caso de error
-                errores++;                
-                ResultadoArchivoErrores +=(lexer.lineNumber+1) + ":"+ lexer.chars + "\tNot valid token:'"+lexer.lexeme+"'\n";
-                ResultadoConsola = ResultadoConsola + "*** Error line " + (lexer.lineNumber+1) +". \n*** Unrecognized char: " +lexer.lexeme + "\n\n";
-                Document doc = jTextPane1.getDocument();
-                StyleConstants.setBackground(style,Color.RED);
-                doc.insertString(doc.getLength(), lexer.lexeme,style);
-            }
-            else{
-                Document doc = jTextPane1.getDocument();
-                if(token == Token.T_IDENTIFIER){
-                    if(lexer.lexeme.length() > 31){
-                        lexer.lexeme = lexer.lexeme.substring(0,31) + " - TRUNCATED IDENTIFIER (Length is greater than 31";
-                    }                   
-                    StyleConstants.setForeground(style,Color.BLACK);
-                }
-                else if(token == Token.VARID){
-                    StyleConstants.setForeground(style, new Color(0x5C, 0X35, 0X66));
-                }else if(token == Token.T_STRINGCONSTANT){
-                    StyleConstants.setForeground(style, new Color(0x4E,0x9A, 0x06));
-                }else if(token == Token.FUNC){
-                    StyleConstants.setBold(style, true);
-                    StyleConstants.setForeground(style, new Color(0x55,0x57, 0x53));
-                }else if(token == Token.T_RSRVWRDS){
-                    lexer.lexeme = lexer.lexeme.toLowerCase();
-                    StyleConstants.setForeground(style, new Color(0xF9,0x26, 0x72));
-                }else if(token == Token.BOOL){
-                    StyleConstants.setForeground(style, new Color(0xAE,0x81, 0xFF));
-                }else if(token == Token.INT || token == Token.DOUBLE){
-                    StyleConstants.setForeground(style, new Color(0x72,0x9F, 0xCF));
-                }else if(token == Token.CTRLSTRCT){
-                    StyleConstants.setForeground(style, new Color(0xF9,0x26, 0x72));
-                }else if(token == Token.CONSTANT){
-                    StyleConstants.setForeground(style, new Color(0xAE, 0x81, 0xFF));
-                }else if(token == Token.COMMENT){
-                    StyleConstants.setForeground(style, new Color(0xC4, 0xA0, 0x00));
-                }else if(token == Token.T_IDENTIFIER){
-                    StyleConstants.setForeground(style, Color.LIGHT_GRAY);
-                }else if(token == Token.DB){
-                    StyleConstants.setForeground(style, Color.ORANGE);
-                    int i = lexer.lexeme.indexOf("[");
-                        String param = lexer.lexeme.substring(0,i).toLowerCase()+lexer.lexeme.substring(i, lexer.lexeme.length()).toUpperCase();
-                }else if(token == Token.MAGCONSTANT){
-                    String content = lexer.lexeme;
-                }else if(token == Token.LOGOP){
-                    String content = lexer.lexeme;
-                }
-                if(token!=token.BLANK && token!=token.NEWLINE && token != token.TWONEWLINE){
-                    if(token!=token.ERROR_COMMENT)
-                        ResultadoConsola = ResultadoConsola + String.format("%1$-" + 13 + "s", lexer.lexeme+" ")  + "line " +(lexer.lineNumber+1)+" cols "+((int)lexer.chars-(int)lexer.lexeme.length()+1)+ "-" +lexer.chars + " is " + ((token==Token.NEWLINE)? ":": token.toString()) + "\n\n";               
-                    else{
-                        ResultadoConsola = ResultadoConsola + " *** FATAL ERROR (UNCLOSED COMMENT) line " + (lexer.lineNumber+1)+" cols " + lexer.chars + " *** \n\n";
-                        ResultadoArchivoSalida += lexer.lexeme;
-                        doc.insertString(doc.getLength(), lexer.lexeme,style);
-                        StyleConstants.setBold(style, false);
-                        StyleConstants.setBackground(style, Color.WHITE);
-                        StyleConstants.setForeground(style, Color.black);
-                        ResultadoConsola = ResultadoConsola+"EOF";
-                        jTextArea1.setText(ResultadoConsola);
-                        break;
-                    }
-                }else if(token==token.TWONEWLINE || (token == token.NEWLINE && (previousToken == token.NEWLINE || previousToken == token.TWONEWLINE))){
-                    //lexer.yyline = lexer.yyline-1;
-                }
-                doc.insertString(doc.getLength(), lexer.lexeme,style);
-                StyleConstants.setBold(style, false);
-                StyleConstants.setBackground(style, Color.WHITE);
-                StyleConstants.setForeground(style, Color.black);
-            }
-            previousToken = token;
         
-               
-        }
         File outputFile = new File(filePath+".out");
         PrintWriter writer;
         writer = new PrintWriter(outputFile);
@@ -424,7 +354,7 @@ public class Interfaz extends javax.swing.JFrame {
         writer.close();
         
     }
-    public void validarArchivo(String filePath) throws FileNotFoundException, IOException, BadLocationException{
+    public void validarArchivo(String filePath) throws FileNotFoundException, IOException, BadLocationException, Exception{
         this.probarLexerFile(filePath);
     }
     

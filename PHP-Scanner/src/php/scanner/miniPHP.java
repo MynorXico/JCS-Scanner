@@ -37,10 +37,7 @@ public class miniPHP {
             System.out.println(new BufferedReader(new InputStreamReader(Runtime.getRuntime().exec(command).getInputStream())).readLine());       
         }catch(Exception e){
             
-        }
-        
-        
-       
+        }       
     }
     
     public static void generarLexer(String path){
