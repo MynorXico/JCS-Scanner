@@ -59,6 +59,7 @@ non terminal Object     Arlogop, Program, Decl, VariableDecl,FunctionDecl,ClassD
                          PrototypeStar, ExprOptional, elseStmtOptional, IdentList, ExprList;
 
 
+
 precedence left equals;
 precedence left logop;
 precedence left arop;
@@ -124,7 +125,8 @@ start with Program;
     Prototype ::= Type ident prnthss_A Formals prnthss_C pyc|
                   t_void ident prnthss_A Formals prnthss_C pyc
     ;
-    Stmt ::= ExprOptional pyc|
+    Stmt ::= Expr pyc|
+                pyc|
                     IfStmt|
                     WhileStmt|
                     ForStmt|
@@ -133,7 +135,6 @@ start with Program;
                     PrintStmt|
                     StmtBlock
     ;
-    ExprOptional    ::= Expr|;
     StmtBlock ::= curly_A VariableDeclStar StmtStar curly_C
     ;
     IfStmt ::= t_if prnthss_A Expr prnthss_C Stmt elseStmtOptional
@@ -143,7 +144,7 @@ start with Program;
     
     VariableDeclStar ::= VariableDecl VariableDeclStar|
     ;
-    StmtStar ::= Stmt StmtStar | 
+    StmtStar ::= StmtStar Stmt  | 
     ;
     WhileStmt ::= t_while prnthss_A Expr prnthss_C Stmt										
     ;
