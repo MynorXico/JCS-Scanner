@@ -6,7 +6,7 @@ import java.util.LinkedList;
 
 %%
 %{
-    public static LinkedList<TError> TablaEL = new LinkedList<TError>(); 
+    public LinkedList<TError> TablaEL = new LinkedList<TError>(); 
 %}
 
 %public
@@ -47,8 +47,8 @@ curly_C = "}"
 extends = extends
 // Data Types
 bool_type = true|false
-int_type = [+-]?({decimal}|{hexadecimal})
-double_type = [-+]?[0-9]+\.?[0-9]+([eE]{int_type}.?[0-9]*)?
+int_type = ({decimal}|{hexadecimal})
+double_type = [0-9]+\.?[0-9]+([eE]{int_type}.?[0-9]*)?
 string_type = (\"([^\"\\\n]|\\.)*\")
 
 // C#
@@ -103,6 +103,8 @@ public int lineNumber = 0;
 public int chars = 0;
 %}
 %%
+
+"-"     {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.minus, yycolumn, yyline, yytext());}
 {semicolon}     {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.pyc, yycolumn, yyline, yytext());}
 {new}            {chars += yytext().length(); lexeme=yytext(); lineNumber=yyline; return new Symbol(sym.t_new, yycolumn, yyline, yytext());} 
 {class}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.clase, yycolumn, yyline, yytext());}
@@ -141,7 +143,7 @@ void            {chars += yytext().length(); lexeme=yytext(); lineNumber=yyline;
 {ass_op}        {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.equals, yycolumn, yyline, yytext());}
 {inc_dec_op}    {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.ident, yycolumn, yyline, yytext());}
 {ar_op} 	    {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.arop, yycolumn, yyline, yytext());}
-{cmp_op}	    {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.arop, yycolumn, yyline, yytext());}
+{cmp_op}	    {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.cmpop, yycolumn, yyline, yytext());}
 {log_op}        {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.logop, yycolumn, yyline, yytext());}
 {prnthss}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.prnthss, yycolumn, yyline, yytext());}
 {prnthss_A}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.prnthss_A, yycolumn, yyline, yytext());}

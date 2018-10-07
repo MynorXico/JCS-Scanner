@@ -48,12 +48,9 @@ public class Interfaz extends javax.swing.JFrame {
     public Interfaz() throws BadLocationException {
         initComponents();
         // Define a default background color attribute
-        StyledDocument doc = (StyledDocument)jTextPane1.getDocument();
     
         // Create a style object and then set the style attributes
-        Style style = doc.addStyle("StyleName", null);
 
-        StyleConstants.setBackground(style, new Color(0, 0, 51));
     
 
     }
@@ -72,12 +69,8 @@ public class Interfaz extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
-        jLabel4 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         taOriginal = new javax.swing.JTextArea();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        jTextPane1 = new javax.swing.JTextPane();
-        jLabel5 = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
@@ -108,22 +101,9 @@ public class Interfaz extends javax.swing.JFrame {
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel3.setText("C# Lexical Analyzer");
 
-        jLabel4.setFont(new java.awt.Font("Calibri", 1, 24)); // NOI18N
-        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel4.setText("Original C# File");
-
         taOriginal.setColumns(20);
         taOriginal.setRows(5);
         jScrollPane2.setViewportView(taOriginal);
-
-        jTextPane1.setEditable(false);
-        jTextPane1.setBackground(new java.awt.Color(0, 0, 102));
-        jTextPane1.setForeground(new java.awt.Color(255, 255, 255));
-        jScrollPane3.setViewportView(jTextPane1);
-
-        jLabel5.setFont(new java.awt.Font("Calibri", 1, 24)); // NOI18N
-        jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel5.setText("Analyzed C# File");
 
         jMenu1.setText("File");
 
@@ -154,23 +134,14 @@ public class Interfaz extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(591, 591, 591)
                         .addComponent(jButton1)))
-                .addGap(0, 0, Short.MAX_VALUE))
+                .addGap(0, 531, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(19, 19, 19)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 545, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(117, 117, 117)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 569, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 20, Short.MAX_VALUE)))
+                        .addComponent(jScrollPane2)))
                 .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addGap(158, 158, 158)
-                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 299, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 299, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(186, 186, 186))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -181,14 +152,8 @@ public class Interfaz extends javax.swing.JFrame {
                 .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 12, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jButton1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 453, Short.MAX_VALUE)
-                    .addComponent(jScrollPane3))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 480, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 306, Short.MAX_VALUE)
                 .addContainerGap())
@@ -232,7 +197,7 @@ public class Interfaz extends javax.swing.JFrame {
         new File(sourcePath+"Token.class").delete();
     }//GEN-LAST:event_formWindowClosed
     public void Analyze() throws FileNotFoundException, BadLocationException, Exception{
-        jTextPane1.setStyledDocument(new DefaultStyledDocument());
+        
         long start = 0;
         long end = 0;
         
@@ -325,7 +290,7 @@ public class Interfaz extends javax.swing.JFrame {
         Lexer lexer = new Lexer(reader);
         parser p = new parser(lexer);
         
-        
+        String consola = "";
         try{
             System.out.println("*************************************");        
        
@@ -336,15 +301,17 @@ public class Interfaz extends javax.swing.JFrame {
         }
         System.out.println("*************************************");        
         for(int i = 0; i < p.TablaES.size();i++){
-            System.out.println("Error en " +p.TablaES.get(i).lexema);
+            consola += "Error Sintáctico. Símbolo: " + p.TablaES.get(i).lexema + " , Línea: " + p.TablaES.get(i).linea + ", Columna: " + p.TablaES.get(i).columna+"\n";
         }
-            
+        for(int i = 0; i < lexer.TablaEL.size() ; i++){
+            consola += "Error Léxico. Símbolo: " + lexer.TablaEL.get(i).lexema + " , Línea: " + p.TablaES.get(i).linea + ", Columna: " + p.TablaES.get(i).columna+"\n";
+        }
+        jTextArea1.setText(consola);
         
         String ResultadoConsola = "";
         String ResultadoArchivoErrores = "";
         String ResultadoArchivoSalida = "";
         int errores = 0;
-        Style style = jTextPane1.addStyle("", null);
         Token previousToken = null;
         
         File outputFile = new File(filePath+".out");
@@ -366,17 +333,13 @@ public class Interfaz extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTextPane jTextPane1;
     private javax.swing.JTextArea taOriginal;
     // End of variables declaration//GEN-END:variables
 }

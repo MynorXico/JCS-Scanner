@@ -14,7 +14,7 @@ parser code
     public LinkedList<TError> TablaES = new LinkedList<TError>();
 
 
-    public void sintax_error(Symbol s){
+    public void syntax_error(Symbol s){
         String lexema = s.value.toString();
         int fila = s.right;
         int columna = s.left;
@@ -41,19 +41,19 @@ parser code
         TablaES.add(datos);
     }
 
-:}
+:}  
 
 
 
 
-terminal          minus,arop, logop,ident,pyc,t_int,t_double,t_bool, t_string, bolCnst,strConst,brackets,t_void,prnthss_A,prnthss_C,comma,clase,t_implements,t_interface,
+terminal          minus,arop, cmpop, logop,ident,pyc,t_int,t_double,t_bool, t_string, bolCnst,strConst,brackets,t_void,prnthss_A,prnthss_C,comma,clase,t_implements,t_interface,
                   t_if, t_else,t_for,t_while,t_return,t_break,print,t_this,prnthss,brackets_A,brackets_C,neg,malloc,readInteger,
                   ReadLine,dot,dblConst,intCnst,t_null,t_newArr,getByte,setByte, equals, curly_A, curly_C, extend, t_new;
    
 
 
 /* No terminales usados en la seccion gramatical. */
-non terminal Object     Arlogop, Program, Decl, VariableDecl,FunctionDecl,ClassDecl, DeclStar, InterfaceDecl,Variable,Type,Formals,StmtBlock,Field,
+non terminal Object     VariableList, Arlogop, Program, Decl, VariableDecl,FunctionDecl,ClassDecl, DeclStar, InterfaceDecl,Variable,Type,Formals,StmtBlock,Field,
                         ExtendsIdentOptional,ImplementsIdentPlusCommaOptional,Prototype,Stmt,Expr,IfStmt,WhileStmt,ForStmt,BreakStmt,ReturnStmt,PrintStmt,FieldStar,
                         VariableDeclStar,StmtStar,LValue,Constant,Call,Actuals,LibCall,
                          PrototypeStar, ExprOptional, elseStmtOptional, IdentList, ExprList;
@@ -61,8 +61,10 @@ non terminal Object     Arlogop, Program, Decl, VariableDecl,FunctionDecl,ClassD
 
 
 precedence left equals;
-precedence left logop;
+
 precedence left arop;
+precedence left cmpop;
+precedence left logop;
 precedence left neg, minus;
 precedence left brackets_A, dot;
 precedence left prnthss_A;
@@ -81,7 +83,9 @@ start with Program;
     Decl ::= VariableDecl|
              FunctionDecl|
              ClassDecl|
-             InterfaceDecl
+             InterfaceDecl|
+             error pyc|
+             error curly_C
     ;
     DeclStar ::= |Decl DeclStar;
     
@@ -99,9 +103,12 @@ start with Program;
     FunctionDecl ::= Type ident	prnthss_A Formals prnthss_C StmtBlock|
                     t_void ident prnthss_A Formals prnthss_C StmtBlock
     ;
-    Formals ::= Variable|
-                Formals comma Variable
+    Formals ::= VariableList|;
+
+    VariableList    ::= Variable|
+                        VariableList comma Variable
     ;
+    
 
     ClassDecl ::= clase ident ExtendsIdentOptional ImplementsIdentPlusCommaOptional curly_A FieldStar curly_C		
     ;
@@ -154,7 +161,7 @@ start with Program;
     ;
     BreakStmt ::= t_break pyc
     ;
-    PrintStmt ::= print prnthss_A Expr ExprList prnthss_C pyc
+    PrintStmt ::= print prnthss_A ExprList prnthss_C pyc
     ;
     
     
@@ -167,6 +174,7 @@ start with Program;
              Call|
              prnthss_A Expr prnthss_C|
              Expr Arlogop Expr|
+             Expr cmpop Expr|
              minus Expr|
              neg Expr|
              t_new prnthss_A ident prnthss_C|
