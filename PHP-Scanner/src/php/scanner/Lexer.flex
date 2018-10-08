@@ -1,6 +1,5 @@
 package php.scanner;
 import java_cup.runtime.Symbol;
-import static php.scanner.Token.*;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -136,6 +135,7 @@ string       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; ret
 
 void            {chars += yytext().length(); lexeme=yytext(); lineNumber=yyline; return new Symbol(sym.t_void, yycolumn, yyline, yytext());} 
 {comment}       {chars += yytext().length(); if(yytext().contains("\n")){chars=0; lineNumber=yyline;} lexeme=yytext();}
+{bool_type}     {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.bolCnst, yycolumn, yyline, yytext());}
 {identifier}    {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.ident, yycolumn, yyline, yytext());}
 {string_type}   {chars += yytext().length(); lexeme=yytext(); lineNumber=yyline; return new Symbol(sym.strConst, yycolumn, yyline, yytext());}
 {control_struct} {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; }
@@ -161,7 +161,6 @@ void            {chars += yytext().length(); lexeme=yytext(); lineNumber=yyline;
 
 
 
-{bool_type}     {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.bolCnst, yycolumn, yyline, yytext());}
 {int_type}      {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.intCnst, yycolumn, yyline, yytext());}
 {double_type}   {chars += yytext().length(); lexeme=yytext(); lineNumber=yyline;return new Symbol(sym.dblConst, yycolumn, yyline, yytext());}
 [ \t\r]+        {chars += yytext().length(); lexeme=yytext();lineNumber=yyline;  }

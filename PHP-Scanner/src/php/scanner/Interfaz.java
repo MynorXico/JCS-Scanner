@@ -305,7 +305,6 @@ public class Interfaz extends javax.swing.JFrame {
         String ResultadoArchivoErrores = "";
         String ResultadoArchivoSalida = "";
         int errores = 0;
-        Token previousToken = null;
       
         
     }
