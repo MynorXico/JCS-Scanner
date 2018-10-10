@@ -857,8 +857,13 @@ public int chars = 0;
           case 53: break;
           case 3: 
             { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; if(lexeme.length() > 31){
-                        lexeme = lexeme.substring(0,31) + " - TRUNCATED IDENTIFIER (Length is greater than 31";
-                    } 
+                        lexeme = lexeme.substring(0,31);
+                        try {
+                    Interfaz.getInterfaz().AddTextToJTextArea("Identificador Truncado: " + lexeme+"\n");
+                } catch (BadLocationException ex) {
+                    Logger.getLogger(Lexer.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                    }  
                 return new Symbol(sym.ident, yycolumn, yyline, lexeme);
             }
           case 54: break;

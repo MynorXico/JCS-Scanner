@@ -94,7 +94,7 @@ null = null
 newArr = NewArray
 getByte = GetByte
 setByte = SetByte
-new = new
+new = New
 // ERR
 
 %{
