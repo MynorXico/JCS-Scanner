@@ -37,24 +37,22 @@ public class Lexer implements java_cup.runtime.Scanner {
   /** 
    * Translates characters to character classes
    */
-  private static final char [] ZZ_CMAP = {
-     0,  0,  0,  0,  0,  0,  0,  0,  0, 65, 36, 38, 38, 37,  0,  0, 
-     0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0, 
-    55, 12, 40,  0,  0,  6, 13,  0, 15, 16,  8,  6, 22,  7, 23,  9, 
-     2,  1,  1,  1,  1,  1,  1,  1,  1,  1,  0, 21, 10, 11, 10,  0, 
-     0, 53, 62,  4,  4, 35,  4, 61,  5, 59,  5,  5, 60, 57, 52,  5, 
-    56,  5, 58, 63,  5,  5,  5,  5,  3,  5,  5, 19, 41, 20,  0,  5, 
-     0, 33, 44, 46, 28, 24, 32, 45, 47, 42,  5, 51, 34, 48, 27, 43, 
-    49,  5, 30, 29, 26, 31, 64, 50, 25, 54,  5, 17, 14, 18,  0,  5, 
-     5,  5,  5,  5,  5, 39,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5, 
-     5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5, 
-     5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5, 
-     5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5, 
-     5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5, 
-     5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5, 
-     5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5, 
-     5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5,  5
-  };
+  private static final String ZZ_CMAP_PACKED = 
+    "\11\0\1\101\1\44\1\46\1\46\1\45\22\0\1\67\1\14\1\50"+
+    "\2\0\1\6\1\15\1\0\1\17\1\20\1\10\1\6\1\26\1\7"+
+    "\1\27\1\11\1\2\11\1\1\0\1\25\1\12\1\13\1\12\2\0"+
+    "\1\65\1\76\2\4\1\43\1\4\1\75\1\5\1\73\2\5\1\74"+
+    "\1\71\1\64\1\5\1\70\1\5\1\72\1\77\4\5\1\3\2\5"+
+    "\1\23\1\51\1\24\1\0\1\5\1\0\1\41\1\54\1\56\1\34"+
+    "\1\30\1\40\1\55\1\57\1\52\1\5\1\63\1\42\1\60\1\33"+
+    "\1\53\1\61\1\5\1\36\1\35\1\32\1\37\1\100\1\62\1\31"+
+    "\1\66\1\5\1\21\1\16\1\22\1\0\6\5\1\47\172\5\u1f28\0"+
+    "\1\46\1\46\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\uffff\0\udfe6\0";
+
+  /** 
+   * Translates characters to character classes
+   */
+  private static final char [] ZZ_CMAP = zzUnpackCMap(ZZ_CMAP_PACKED);
 
   /** 
    * Translates DFA states to action switch labels.
@@ -481,6 +479,24 @@ public int chars = 0;
   }
 
 
+  /** 
+   * Unpacks the compressed character translation table.
+   *
+   * @param packed   the packed character translation table
+   * @return         the unpacked character translation table
+   */
+  private static char [] zzUnpackCMap(String packed) {
+    char [] map = new char[0x110000];
+    int i = 0;  /* index in packed string  */
+    int j = 0;  /* index in unpacked array */
+    while (i < 218) {
+      int  count = packed.charAt(i++);
+      char value = packed.charAt(i++);
+      do map[j++] = value; while (--count > 0);
+    }
+    return map;
+  }
+
 
   /**
    * Refills the input buffer.
@@ -828,7 +844,7 @@ public int chars = 0;
           case 1: 
             { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; System.out.println("Error Léxico"+yytext()+" Linea "+yyline+" Columna "+yycolumn);
                           try {
-                            Interfaz.getInterfaz().AddTextToJTextArea("Error Léxico. Lexema: "+lexeme+"\tFila: " + yyline + "\tColumna: "+ yycolumn+"\n");
+                            Interfaz.getInterfaz().AddTextToJTextArea("Error Léxico. Lexema: "+lexeme+"\tFila: " + (yyline+1) + "\tColumna: "+ (yycolumn+1)+"\n");
                           } catch (BadLocationException ex) {
                               System.out.println("Error escribiendo");
                               Logger.getLogger(parser.class.getName()).log(Level.SEVERE, null, ex);
@@ -840,7 +856,15 @@ public int chars = 0;
             }
           case 53: break;
           case 3: 
-            { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.ident, yycolumn, yyline, yytext());
+            { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; if(lexeme.length() > 31){
+                        lexeme = lexeme.substring(0,31);
+                        try {
+                    Interfaz.getInterfaz().AddTextToJTextArea("Identificador Truncado: " + lexeme+"\n");
+                } catch (BadLocationException ex) {
+                    Logger.getLogger(Lexer.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                    }  
+                return new Symbol(sym.ident, yycolumn, yyline, lexeme);
             }
           case 54: break;
           case 4: 
@@ -909,8 +933,12 @@ public int chars = 0;
           case 70: break;
           case 20: 
             { chars += yytext().length(); lexeme=yytext();lineNumber=yyline; System.out.println("Error Lexico"+yytext()+" Linea "+yyline+" Columna "+yycolumn);
-                          TError datos = new TError(yytext(),yyline,yycolumn,"Error Lexico","Simbolo no existe en el lenguaje");
-                          TablaEL.add(datos);
+                          try {
+                            Interfaz.getInterfaz().AddTextToJTextArea("Error Léxico. Lexema: "+lexeme+"\tFila: " + (yyline+1) + "\tColumna: "+ (yycolumn+1)+"\n");
+                          } catch (BadLocationException ex) {
+                              System.out.println("Error escribiendo");
+                              Logger.getLogger(parser.class.getName()).log(Level.SEVERE, null, ex);
+                          }
             }
           case 71: break;
           case 21: 

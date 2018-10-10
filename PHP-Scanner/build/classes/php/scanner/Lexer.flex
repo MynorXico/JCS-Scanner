@@ -21,7 +21,6 @@ import javax.swing.text.BadLocationException;
 %column
 %full
 %line
-%unicode
 // Alphabet
 decimal	= [0-9][0-9]*|0
 hexadecimal = 0[xX][0-9a-fA-F]+
@@ -136,7 +135,15 @@ string       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; ret
 void            {chars += yytext().length(); lexeme=yytext(); lineNumber=yyline; return new Symbol(sym.t_void, yycolumn, yyline, yytext());} 
 {comment}       {chars += yytext().length(); if(yytext().contains("\n")){chars=0; lineNumber=yyline;} lexeme=yytext();}
 {bool_type}     {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.bolCnst, yycolumn, yyline, yytext());}
-{identifier}    {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.ident, yycolumn, yyline, yytext());}
+{identifier}    {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; if(lexeme.length() > 31){
+                        lexeme = lexeme.substring(0,31);
+                        try {
+                    Interfaz.getInterfaz().AddTextToJTextArea("Identificador Truncado\n");
+                } catch (BadLocationException ex) {
+                    Logger.getLogger(Lexer.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                    }  
+                return new Symbol(sym.ident, yycolumn, yyline, lexeme);}
 {string_type}   {chars += yytext().length(); lexeme=yytext(); lineNumber=yyline; return new Symbol(sym.strConst, yycolumn, yyline, yytext());}
 {control_struct} {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; }
 \.              {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.dot, yycolumn, yyline, yytext());}
@@ -166,11 +173,15 @@ void            {chars += yytext().length(); lexeme=yytext(); lineNumber=yyline;
 [ \t\r]+        {chars += yytext().length(); lexeme=yytext();lineNumber=yyline;  }
 {comma}         {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.comma, yycolumn, yyline, yytext());}
 {multiline_error}  {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; System.out.println("Error Lexico"+yytext()+" Linea "+yyline+" Columna "+yycolumn);
-                          TError datos = new TError(yytext(),yyline,yycolumn,"Error Lexico","Simbolo no existe en el lenguaje");
-                          TablaEL.add(datos);}
+                          try {
+                            Interfaz.getInterfaz().AddTextToJTextArea("Error Léxico. Lexema: "+lexeme+"\tFila: " + (yyline+1) + "\tColumna: "+ (yycolumn+1)+"\n");
+                          } catch (BadLocationException ex) {
+                              System.out.println("Error escribiendo");
+                              Logger.getLogger(parser.class.getName()).log(Level.SEVERE, null, ex);
+                          }}
 .|"=!=" {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; System.out.println("Error Léxico"+yytext()+" Linea "+yyline+" Columna "+yycolumn);
                           try {
-                            Interfaz.getInterfaz().AddTextToJTextArea("Error Léxico. Lexema: "+lexeme+"\tFila: " + yyline + "\tColumna: "+ yycolumn+"\n");
+                            Interfaz.getInterfaz().AddTextToJTextArea("Error Léxico. Lexema: "+lexeme+"\tFila: " + (yyline+1) + "\tColumna: "+ (yycolumn+1)+"\n");
                           } catch (BadLocationException ex) {
                               System.out.println("Error escribiendo");
                               Logger.getLogger(parser.class.getName()).log(Level.SEVERE, null, ex);

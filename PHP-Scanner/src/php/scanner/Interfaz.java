@@ -295,8 +295,10 @@ public class Interfaz extends javax.swing.JFrame {
             System.out.println("*************************************");        
        
             p.parse();
+            AddTextToJTextArea("El analisis finalizo exitosamente.");
             System.out.println("Terminó exitosamente el análisis");        
         }catch(Exception e){
+            AddTextToJTextArea("Ocurrio un error irrecuperable.");
             System.out.println("Terminó el análisis con errores jeje");          
         }
         
