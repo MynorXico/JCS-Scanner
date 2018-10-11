@@ -21,13 +21,15 @@ import javax.swing.text.BadLocationException;
 %column
 %full
 %line
+%unicode
 // Alphabet
 decimal	= [0-9][0-9]*|0
 hexadecimal = 0[xX][0-9a-fA-F]+
 label = [a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*
 
 // Operators
-ar_op = "+"|"-"|"*"|"/"|"%"
+minus = "-"
+ar_op = "+"|"*"|"/"|"%"
 cmp_op = "<"|">"|"<="|">="|"=="|"!="
 log_op = "&&"|"||"
 neg_op = "!"
@@ -94,7 +96,7 @@ null = null
 newArr = NewArray
 getByte = GetByte
 setByte = SetByte
-new = New
+new = new
 // ERR
 
 %{
@@ -135,15 +137,7 @@ string       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; ret
 void            {chars += yytext().length(); lexeme=yytext(); lineNumber=yyline; return new Symbol(sym.t_void, yycolumn, yyline, yytext());} 
 {comment}       {chars += yytext().length(); if(yytext().contains("\n")){chars=0; lineNumber=yyline;} lexeme=yytext();}
 {bool_type}     {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.bolCnst, yycolumn, yyline, yytext());}
-{identifier}    {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; if(lexeme.length() > 31){
-                        lexeme = lexeme.substring(0,31);
-                        try {
-                    Interfaz.getInterfaz().AddTextToJTextArea("Identificador Truncado\n");
-                } catch (BadLocationException ex) {
-                    Logger.getLogger(Lexer.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                    }  
-                return new Symbol(sym.ident, yycolumn, yyline, lexeme);}
+{identifier}    {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.ident, yycolumn, yyline, yytext());}
 {string_type}   {chars += yytext().length(); lexeme=yytext(); lineNumber=yyline; return new Symbol(sym.strConst, yycolumn, yyline, yytext());}
 {control_struct} {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; }
 \.              {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.dot, yycolumn, yyline, yytext());}
@@ -174,14 +168,14 @@ void            {chars += yytext().length(); lexeme=yytext(); lineNumber=yyline;
 {comma}         {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.comma, yycolumn, yyline, yytext());}
 {multiline_error}  {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; System.out.println("Error Lexico"+yytext()+" Linea "+yyline+" Columna "+yycolumn);
                           try {
-                            Interfaz.getInterfaz().AddTextToJTextArea("Error Léxico. Lexema: "+lexeme+"\tFila: " + (yyline+1) + "\tColumna: "+ (yycolumn+1)+"\n");
+                            Interfaz.getInterfaz().AddTextToJTextArea("Error Lexico. Lexema: "+lexeme+"\tLinea: " + yyline + "\tColumna: "+ yycolumn+"\n");
                           } catch (BadLocationException ex) {
                               System.out.println("Error escribiendo");
                               Logger.getLogger(parser.class.getName()).log(Level.SEVERE, null, ex);
                           }}
-.|"=!=" {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; System.out.println("Error Léxico"+yytext()+" Linea "+yyline+" Columna "+yycolumn);
+.|"=!=" {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; System.out.println("Error Lexico"+yytext()+" Linea "+yyline+" Columna "+yycolumn);
                           try {
-                            Interfaz.getInterfaz().AddTextToJTextArea("Error Léxico. Lexema: "+lexeme+"\tFila: " + (yyline+1) + "\tColumna: "+ (yycolumn+1)+"\n");
+                            Interfaz.getInterfaz().AddTextToJTextArea("Error Lexico. Lexema: "+lexeme+"\tLinea: " + yyline + "\tColumna: "+ yycolumn+"\n");
                           } catch (BadLocationException ex) {
                               System.out.println("Error escribiendo");
                               Logger.getLogger(parser.class.getName()).log(Level.SEVERE, null, ex);

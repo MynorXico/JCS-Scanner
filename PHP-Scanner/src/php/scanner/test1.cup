@@ -64,8 +64,8 @@ non terminal Object     VariableList, Program, Decl, VariableDecl,FunctionDecl,C
 precedence left equals;
 precedence left logop;
 precedence nonassoc cmpop;
-precedence left arop;
-precedence nonassoc neg, minus;
+precedence left arop, minus;
+precedence nonassoc neg;
 precedence nonassoc brackets_A, dot;
 precedence nonassoc t_else;
 
@@ -171,6 +171,7 @@ start with Program;
              Expr arop Expr|
              Expr logop Expr|
              Expr cmpop Expr|
+             Expr minus Expr|
              minus Expr|
              neg Expr|
              t_new prnthss_A ident prnthss_C|
