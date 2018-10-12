@@ -150,7 +150,6 @@ void            {chars += yytext().length(); lexeme=yytext(); lineNumber=yyline;
 {prnthss_A}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.prnthss_A, yycolumn, yyline, yytext());}
 {prnthss_C}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.prnthss_C, yycolumn, yyline, yytext());}
 
-{curly}         {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; }
 {bracket_A}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.brackets_A, yycolumn, yyline, yytext());}
 {bracket_C}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.brackets_C, yycolumn, yyline, yytext());}
 {brackets}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.brackets, yycolumn, yyline, yytext());}
