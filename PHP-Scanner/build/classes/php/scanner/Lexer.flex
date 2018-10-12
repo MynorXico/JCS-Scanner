@@ -1,100 +1,102 @@
 package php.scanner;
+import java_cup.runtime.Symbol;
+import java.util.LinkedList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.text.BadLocationException;
 
-import static php.scanner.Token.*;
 %%
+%{
+    public LinkedList<TError> TablaEL = new LinkedList<TError>(); 
+%}
+
+%public
 %class Lexer
 %type Token
 %line
+%implements java_cup.runtime.Scanner
+%function next_token
+%type java_cup.runtime.Symbol
+%char
+%column
+%full
+%line
+%unicode
 // Alphabet
-a = [aA]
-b = [bB]
-c = [cC]
-d = [dD]
-e = [eE]
-f = [fF]
-g = [gG]
-h = [hH]
-i = [iI]
-j = [jJ]
-k = [kK]
-l = [lL]
-m = [mM]
-n = [nN]
-o = [oO]
-p = [pP]
-q = [qQ]
-r = [rR]
-s = [sS]
-t = [tT]
-u = [uU]
-v = [vV]
-w = [wW]
-x = [xX]
-y = [yY]
-z = [zZ]
-escaped = \\n|\\r|\\t|\\v|\\e|\\f|\\\\|\\"$"|\\[0-7]{1,3}|\\xu0-9A-Fa-f]+|\\.
-decimal	= [1-9][0-9]*|0
+decimal	= [0-9][0-9]*|0
 hexadecimal = 0[xX][0-9a-fA-F]+
-octal = 0[0-7]+
-binary = 0[bB][01]+
 label = [a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*
-mag_constant = (__)({l}{i}{n}{e}|{f}{i}{l}{e}|{d}{i}{r}|{f}{u}{n}{c}{t}{i}{o}{n}|{c}{l}{a}{s}{s}|{t}{r}{a}{i}{t}|{m}{e}{t}{h}{o}{d}|{n}{a}{m}{e}{s}{p}{a}{c}{e})(__)
 
 // Operators
-ar_op = "+"|"-"|"*"|"/"|"%"|"**"
+minus = "-"
+ar_op = "+"|"*"|"/"|"%"
 cmp_op = "<"|">"|"<="|">="|"=="|"!="
-log_op = {a}{n}{d}|{o}{r}|{x}{o}{r}|"!"|"&&"|"||"
-ass_op = "="|"+="|"-="|"*="|"/="|"%="|".="|"&="|"|="|"^="|"<<="|">>="|"|"|"^"|"<<"|">>"
+log_op = "&&"|"||"
+neg_op = "!"
+ass_op = "="|"+="|"-="|"*="|"/="|"%="
 inc_dec_op = "++"|"--"
-prnthss = "("|")"
-curly = "{"|"}"
-bracket = "["|"]"
+prnthss = "()"
+prnthss_A = "("
+prnthss_C = ")"
+curly = "{}"
+bracket_A = "["
+bracket_C = "]"
+brackets = "[]"
 semicolon = ";"
-comma = ","
-
+comma = ","|"."
+curly_A = "{"
+curly_C = "}"
+extends = extends
 // Data Types
-bool_type = {t}{r}{u}{e}|{f}{a}{l}{s}{e}
-int_type = [+-]?({decimal}|{hexadecimal}|{octal}|{binary})
-double_type = [-+]?[0-9]*\.?[0-9]+([eE]{int_type}.?[0-9]*)?
-numeric = {int_type}|{double_type}
-string_type = ('([^'\\]|\\.)*')|(\"([^\"\\]|\\.)*\")
+bool_type = true|false
+int_type = ({decimal}|{hexadecimal})
+double_type = [0-9]+\.?[0-9]+([eE]{int_type}.?[0-9]*)?
+string_type = (\"([^\"\\\n]|\\.)*\")
+
+// C#
+rsrvd_words = int|double|bool|string|class|interface|null|this|extends|implements|for|while|if|else|return|break|NewArray|New|Array|new|array
 
 // Identifiers
-var_id = "$"{label}
-cnst_id = {label}
+identifier={label}
+
+// Comments
+single_line_comment = ("//")(.)*
+multiline_comment = (("/*")~("*/"))
+comment = {single_line_comment}|{multiline_comment}
+multiline_error = ("/*")
+
 
 // Control Structures
-if = {i}{f}|"?"|":"
-else = {e}{l}{s}{e}
-elseif = {e}{l}{s}{e}{i}{f}
-endif =	{e}{n}{d}{i}{f}
-while =	{w}{h}{i}{l}{e}
-do = {d}{o}
-for = {f}{o}{r}
-foreach = {f}{o}{r}{e}{a}{c}{h}
-break =	{b}{r}{e}{a}{k}
-switch = {s}{w}{i}{t}{c}{h}
-case = {c}{a}{s}{e}
-include = {i}{n}{c}{l}{u}{d}{e}
-continue = {c}{o}{n}{t}{i}{n}{u}{e}
-return = {r}{e}{t}{u}{r}{n}
-control_struct = ({if}|{else}|{elseif}|{endif}|{while}|{do}|{for}|{foreach}|{break}|{switch}|{case}|{continue}|{return}|{include})
-
-// Special words
-superglobal = "$"(GLOBALS|_(SERVER|GET|POST|FILES|COOKIE|SESSION|REQUEST|ENV))
-other_reserved_var = "$"(php_errormsg|HTTP_RAW_POST_DATA|http_response_header|argc|argv)
-rsrvd_var = {superglobal}|{other_reserved_var}
-single_line_comment = ("//"|"#")(.)*
-multiline_comment = (("/*")~("*/"))
-html_ignore =  (("<html>")~("</html>"))
-multiline_error = (("/*")~(\n))
-
-comment = {single_line_comment}|{multiline_comment}
-recordset = "$"{label}"["{string_type}"]"
-function = function
-rsrvd_words = __halt_compiler|break|clone|die|empty|endswitch|final|global|include_once|list|private|return|try|xor|abstract|callable|const|do|enddeclare|endwhile|finally|goto|instanceof|namespace|define|protected|static|unset|yield|and|case|continue|echo|endfor|eval|for|if|insteadof|new|public|switch|use|array|catch|declare|endforeach|exit|foreach|implements|interface|or|require|throw|var|as|class|default|elseif|endif|extends|function|include|isset|print|require_once|trait|while
-php = "<?"{p}{h}{p}|"?>"
-
+if = if
+else = else
+elseif = elseif
+endif =	endif
+while =	while
+do = do
+for = for
+break =	break
+switch = switch
+case = case
+include = include
+continue = continue
+return = return
+control_struct = ({if}|{else}|{elseif}|{endif}|{while}|{do}|{for}|{break}|{switch}|{case}|{continue}|{return}|{include})
+class = class
+implements = implements
+interface = interface
+//valid={identifier}|{string_type}|{control_struct}|\.|[\n]|{ass_op}|{inc_dec_op}|{ar_op}|{cmp_op}|{log_op}|{prnthss}|{curly}|{bracket}|{semicolon}|{bool_type}|{int_type}|{double_type}|[ \t\r]|{rsrvd_words}|{comma}
+if = if
+blank = [\n]|[\n\r]|[ ]
+Print = Print
+this = this
+malloc = Malloc
+readInteger = ReadInteger
+readLine = ReadLine
+null = null
+newArr = NewArray
+getByte = GetByte
+setByte = SetByte
+new = new
 // ERR
 
 %{
@@ -103,36 +105,78 @@ public int lineNumber = 0;
 public int chars = 0;
 %}
 %%
-{recordset}     {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return DB;}
 
-{comment}       {chars += yytext().length(); if(yytext().contains("\n")){chars=0; lineNumber=yyline;} lexeme=yytext(); return COMMENT;}
+"-"     {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.minus, yycolumn, yyline, yytext());}
+{semicolon}     {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.pyc, yycolumn, yyline, yytext());}
+{new}            {chars += yytext().length(); lexeme=yytext(); lineNumber=yyline; return new Symbol(sym.t_new, yycolumn, yyline, yytext());} 
+{class}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.clase, yycolumn, yyline, yytext());}
+{implements}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.t_implements, yycolumn, yyline, yytext());}
+{interface}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.t_interface, yycolumn, yyline, yytext());}
+{if}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.t_if, yycolumn, yyline, yytext());}
+{else}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.t_else, yycolumn, yyline, yytext());}
+{for}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.t_for, yycolumn, yyline, yytext());}
+{while}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.t_while, yycolumn, yyline, yytext());}
+{return}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.t_return, yycolumn, yyline, yytext());}
+{break}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.t_break, yycolumn, yyline, yytext());}
+{Print}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.print, yycolumn, yyline, yytext());}
+{this}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.t_this, yycolumn, yyline, yytext());}
+{malloc}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.malloc, yycolumn, yyline, yytext());}
+{readInteger}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.readInteger, yycolumn, yyline, yytext());}
+{readLine}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.ReadLine, yycolumn, yyline, yytext());}
+{null}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.t_null, yycolumn, yyline, yytext());}
+{newArr}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.t_newArr, yycolumn, yyline, yytext());}
+{getByte}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.getByte, yycolumn, yyline, yytext());}
+{setByte}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.setByte, yycolumn, yyline, yytext());}
+{extends}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.extend, yycolumn, yyline, yytext());}
+int       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.t_int, yycolumn, yyline, yytext());}
+double       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.t_double, yycolumn, yyline, yytext());}
+bool     {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.t_bool, yycolumn, yyline, yytext());}
+string       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.t_string, yycolumn, yyline, yytext());}
 
-{string_type}   {chars += yytext().length(); lexeme=yytext(); lineNumber=yyline; return STRING;}
 
-{control_struct} {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return CTRLSTRCT;}
-\.              {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return CONCAT;}
-[\n]            {chars = 0; lineNumber=yyline; lexeme="\n";lineNumber=yyline; return NEWLINE;}
-{php}           {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return PHP;}
-{mag_constant}  {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return MAGCONSTANT;}
-{rsrvd_var}     {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return RSRVDVAR;}
-{ass_op}        {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return ASSOP;}
-{ar_op} 	    {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return AROP;}
-{cmp_op}	    {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return CMPOP;}
-{log_op}        {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return LOGOP;}
-{inc_dec_op}    {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return INCDECOP;}
-{prnthss}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return PRNTHSS;}
-{curly}         {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return CURLY;}
-{bracket}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return BRACKET;}
-{semicolon}     {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return SEMICOLON;}
-{comma}         {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return COMMA;}
-{bool_type}     {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return BOOL;}
-{int_type}      {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return INT;}
-{double_type}   {chars += yytext().length(); lexeme=yytext(); lineNumber=yyline;return DOUBLE;}
-{var_id}        {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return VARID;}
-{function}      {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return FUNC;}
-[ \t\r]+        {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return BLANK;}
-{rsrvd_words}   {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return RSRVWRDS;}
-{cnst_id}|9pt       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return CONSTANT;}
-{int_type}({cnst_id}|{var_id}) {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return ERROR;}
-//{html_ignore} {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return CONSTANT;}
-.|{multiline_error}|"=!=" {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return ERROR;}
+void            {chars += yytext().length(); lexeme=yytext(); lineNumber=yyline; return new Symbol(sym.t_void, yycolumn, yyline, yytext());} 
+{comment}       {chars += yytext().length(); if(yytext().contains("\n")){chars=0; lineNumber=yyline;} lexeme=yytext();}
+{bool_type}     {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.bolCnst, yycolumn, yyline, yytext());}
+{identifier}    {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.ident, yycolumn, yyline, yytext());}
+{string_type}   {chars += yytext().length(); lexeme=yytext(); lineNumber=yyline; return new Symbol(sym.strConst, yycolumn, yyline, yytext());}
+{control_struct} {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; }
+\.              {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.dot, yycolumn, yyline, yytext());}
+[\n]|[\r\n]|[\n\r]            {chars = 0; lineNumber=yyline; lexeme="\n"; lineNumber = yyline;}
+{blank}{blank}+  {chars = 0; lineNumber=yyline; lexeme="\n"; lineNumber = yyline;}
+{ass_op}        {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.equals, yycolumn, yyline, yytext());}
+{ar_op} 	    {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.arop, yycolumn, yyline, yytext());}
+{cmp_op}	    {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.cmpop, yycolumn, yyline, yytext());}
+{log_op}        {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.logop, yycolumn, yyline, yytext());}
+{prnthss_A}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.prnthss_A, yycolumn, yyline, yytext());}
+{prnthss_C}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.prnthss_C, yycolumn, yyline, yytext());}
+
+{bracket_A}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.brackets_A, yycolumn, yyline, yytext());}
+{bracket_C}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.brackets_C, yycolumn, yyline, yytext());}
+{brackets}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.brackets, yycolumn, yyline, yytext());}
+{neg_op}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.neg, yycolumn, yyline, yytext());}
+{curly_A}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.curly_A, yycolumn, yyline, yytext());}
+{curly_C}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.curly_C, yycolumn, yyline, yytext());}
+
+
+
+
+
+{int_type}      {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.intCnst, yycolumn, yyline, yytext());}
+{double_type}   {chars += yytext().length(); lexeme=yytext(); lineNumber=yyline;return new Symbol(sym.dblConst, yycolumn, yyline, yytext());}
+[ \t\r]+        {chars += yytext().length(); lexeme=yytext();lineNumber=yyline;  }
+{comma}         {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.comma, yycolumn, yyline, yytext());}
+{multiline_error}  {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; System.out.println("Error Lexico"+yytext()+" Linea "+yyline+" Columna "+yycolumn);
+                          try {
+                            Interfaz.getInterfaz().AddTextToJTextArea("Error Lexico. Lexema: "+lexeme+"\tLinea: " + yyline + "\tColumna: "+ yycolumn+"\n");
+                          } catch (BadLocationException ex) {
+                              System.out.println("Error escribiendo");
+                              Logger.getLogger(parser.class.getName()).log(Level.SEVERE, null, ex);
+                          }}
+.|"=!=" {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; System.out.println("Error Lexico"+yytext()+" Linea "+yyline+" Columna "+yycolumn);
+                          try {
+                            Interfaz.getInterfaz().AddTextToJTextArea("Error Lexico. Lexema: "+lexeme+"\tLinea: " + yyline + "\tColumna: "+ yycolumn+"\n");
+                          } catch (BadLocationException ex) {
+                              System.out.println("Error escribiendo");
+                              Logger.getLogger(parser.class.getName()).log(Level.SEVERE, null, ex);
+                          }}
+
