@@ -20,7 +20,7 @@ Ubicarse en la carpeta ```src``` del proyecto y hacer doble clic sobre el archiv
 #### Línea de comandos
 Ubicarse en la carpeta ```src``` del proyecto y ejecutar el comando:
 ```
-java -cp minic.jar;lib/*;. php.scanner.miniPHP
+java -cp miniCS.jar;lib/*;. php.scanner.Interfaz
 ```
 Este comando se encarga de ejecutar ``` minic.jar``` junto a sus dependencias.
 Al ejecutar el programa  ```minic.jar``` se genera el Lexer ``` Lexer.java``` ,  ``` Parser.java ```el parser  y  se abre ```Interfaz.java``` 
