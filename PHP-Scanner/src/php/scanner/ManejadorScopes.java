@@ -22,10 +22,12 @@ public class ManejadorScopes {
         Scope ns = new Scope(CurrentScope);
         CurrentScope.AddScope(ns);
         CurrentScope = ns;
+        System.out.println("Se creó un nuevo ámbito.");
     }
     
     public void FinalizaScope(){
         CurrentScope = CurrentScope.Parent;
+        System.out.println("Se cerró un ámbito. ");
     }
     
     public void AgregarSimbolo(String s, oSymbol o){

@@ -10,7 +10,15 @@ package php.scanner;
  * @author mynor
  */
 public class oSymbol {
-    String identificador;
-    String tipo;
-    String valor;
+    String ID;
+    String DataType;
+    String DeclType;
+    String Value;
+    
+    public oSymbol(String ID, String DataType, String DeclType, String Value){
+        this.ID = ID;
+        this.DataType = DataType;
+        this.DeclType = DeclType;
+        this.Value = Value;
+    }
 }

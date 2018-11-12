@@ -44,21 +44,24 @@ parser code
 
 :}  
 
+action code {: 
+    ManejadorScopes ms = new ManejadorScopes();
+:}
 
 
 
-terminal          minus,arop, cmpop, logop,ident,pyc,t_int,t_double,t_bool, t_string, bolCnst,strConst,brackets,t_void,prnthss_A,prnthss_C,comma,clase,t_implements,t_interface,
+terminal  String  minus, cmpop, logop,ident,pyc,t_int,t_double,t_bool, t_string, bolCnst,strConst,brackets,t_void,prnthss_A,prnthss_C,comma,clase,t_implements,t_interface,
                   t_if, t_else,t_for,t_while,t_return,t_break,print,t_this,brackets_A,brackets_C,neg,malloc,readInteger,
-                  ReadLine,dot,dblConst,intCnst,t_null,t_newArr,getByte,setByte, equals, curly_A, curly_C, extend, t_new, plus, times, divide, mod;
-   
+                  ReadLine,dot,dblConst,t_null,t_newArr,getByte,setByte, equals, curly_A, curly_C, extend, t_new, plus, times, divide, mod;
+terminal String intCnst;
 
 
 /* No terminales usados en la seccion gramatical. */
-non terminal Object     VariableList, Program, Decl, VariableDecl,FunctionDecl,ClassDecl, DeclStar, InterfaceDecl,Variable,Type,Formals,StmtBlock,Field,
-                        ExtendsIdentOptional,ImplementsIdentPlusCommaOptional,Prototype,Stmt,Expr,IfStmt,WhileStmt,ForStmt,BreakStmt,ReturnStmt,PrintStmt,FieldStar,
+non terminal String     VariableList, Program, Decl, VariableDecl,FunctionDecl,ClassDecl, DeclStar, InterfaceDecl,Variable,Type,Formals,StmtBlock,Field,
+                        ExtendsIdentOptional,ImplementsIdentPlusCommaOptional,Prototype,Stmt,IfStmt,WhileStmt,ForStmt,BreakStmt,ReturnStmt,PrintStmt,FieldStar,
                         VariableDeclStar,StmtStar,LValue,Constant,Call,Actuals,LibCall,
                          PrototypeStar, ExprOptional,  IdentList, ExprList;
-
+non terminal String Expr;
 
 
 precedence left equals;
@@ -88,7 +91,7 @@ start with Program;
     
     VariableDecl ::= Variable pyc
     ;
-    Variable ::= Type:t ident:i {: :}
+    Variable ::= Type:t ident:i {: ms.AgregarSimbolo(i, new oSymbol(i, t, "Variable", "")); :}
     ;
     Type ::= t_int|
              t_double|
@@ -97,8 +100,8 @@ start with Program;
              ident|
              Type brackets
     ;
-    FunctionDecl ::= Type ident	prnthss_A Formals prnthss_C StmtBlock|
-                    t_void ident prnthss_A Formals prnthss_C StmtBlock
+    FunctionDecl ::= Type:t ident:i {: ms.AgregarSimbolo(i, new oSymbol(i, t, "Function", null)); :}	prnthss_A {: ms.NuevoScope(); :} Formals prnthss_C StmtBlock {: ms.FinalizaScope();:}|
+                    t_void:t ident:i {: ms.AgregarSimbolo(i, new oSymbol(i, t, "Function", null)); :}  prnthss_A {: ms.NuevoScope(); :} Formals prnthss_C StmtBlock {: ms.FinalizaScope(); :}
     ;
     Formals ::= VariableList|;
 
@@ -107,7 +110,7 @@ start with Program;
     ;
     
 
-    ClassDecl ::= clase ident ExtendsIdentOptional ImplementsIdentPlusCommaOptional curly_A FieldStar curly_C		
+    ClassDecl ::= clase:t ident:i {: ms.AgregarSimbolo(i, new oSymbol(i, t, "Class", null)); :} ExtendsIdentOptional ImplementsIdentPlusCommaOptional curly_A {: ms.NuevoScope(); :} FieldStar {: ms.FinalizaScope(); :} curly_C		
     ;
     FieldStar ::= FieldStar Field |
     ;
@@ -123,7 +126,7 @@ start with Program;
     Field::= VariableDecl|
              FunctionDecl
     ;
-    InterfaceDecl ::= t_interface ident curly_A PrototypeStar curly_C
+    InterfaceDecl ::= t_interface:t ident:i {: ms.AgregarSimbolo(i, new oSymbol(i, t, "Interface", null)); :} curly_A {: ms.NuevoScope(); :}PrototypeStar {: ms.FinalizaScope(); :} curly_C
     ;
     PrototypeStar ::= PrototypeStar Prototype |;
     Prototype ::= Type ident prnthss_A Formals prnthss_C pyc|
@@ -131,9 +134,9 @@ start with Program;
     ;
     Stmt ::= Expr pyc|
                 pyc|
-                    IfStmt|
-                    WhileStmt|
-                    ForStmt|
+                    {: ms.NuevoScope(); :}IfStmt {: ms.FinalizaScope(); :}|
+                    {: ms.NuevoScope(); :} WhileStmt {: ms.FinalizaScope(); :}|
+                    {: ms.NuevoScope(); :} ForStmt {: ms.FinalizaScope(); :}|
                     BreakStmt|
                     ReturnStmt|
                     PrintStmt|
@@ -141,7 +144,7 @@ start with Program;
     ;
     StmtBlock ::= curly_A VariableDeclStar StmtStar curly_C
     ;
-    IfStmt ::= t_if prnthss_A Expr prnthss_C Stmt |t_if prnthss_A Expr prnthss_C Stmt t_else Stmt
+    IfStmt ::=  t_if  prnthss_A Expr prnthss_C Stmt |t_if prnthss_A Expr prnthss_C  Stmt t_else Stmt
     ;
 
     
@@ -164,18 +167,20 @@ start with Program;
     ExprOptional    ::= Expr| ;
 
     Expr ::= LValue equals Expr|
-             Constant|
+             ident|
+             ident equals Expr|
+             Constant:c {:RESULT = c;:}|
              LValue|
              t_this|
              Call|
              prnthss_A Expr prnthss_C|
-             Expr plus Expr|
-             Expr times Expr|
-             Expr divide Expr|
-             Expr mod Expr|
+             Expr: e1 plus Expr: e2 {: //RESULT = String.valueOf(Double.valueOf(e1) + Double.valueOf(e2));:}|
+             Expr: e1 times Expr: e2 {: //RESULT = String.valueOf(Double.valueOf(e1) * Double.valueOf(e2));:}|
+             Expr: e1 divide Expr: e2 {:// RESULT = String.valueOf(Double.valueOf(e1) / Double.valueOf(e2));:}|
+             Expr: e1 mod Expr: e2 {: //RESULT = String.valueOf(Double.valueOf(e1) % Double.valueOf(e2));:}|
              Expr logop Expr|
              Expr cmpop Expr|
-             Expr minus Expr|
+             Expr: e1 minus Expr: e2 {: //RESULT = String.valueOf(Double.valueOf(e1) - Double.valueOf(e2));:}|
              minus Expr|
              neg Expr|
              t_new prnthss_A ident prnthss_C|
@@ -184,8 +189,7 @@ start with Program;
              ReadLine prnthss_A prnthss_C|
              malloc prnthss_A Expr prnthss_C 
     ;
-    LValue ::= ident|
-               Expr dot ident|
+    LValue ::= Expr dot ident|
                Expr brackets_A Expr brackets_C
     ;
     Call ::= ident prnthss_A Actuals prnthss_C|
@@ -201,7 +205,7 @@ start with Program;
     ExprList    ::= Expr|
                     ExprList comma Expr;
 
-    Constant ::= intCnst|
+    Constant ::= intCnst:i {:RESULT = i;:}|
                  dblConst|
                  bolCnst|
                  strConst|

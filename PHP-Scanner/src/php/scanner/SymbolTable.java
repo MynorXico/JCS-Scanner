@@ -23,11 +23,11 @@ public class SymbolTable {
     
     public void Add(String str, oSymbol os){
         if(Table.get(str)!=null){
-            System.out.println("Ya existe un identificador con el nombre " + str);
+            System.out.println("Ya existe un identificador con el nombre " + str + " de tipo " + os.DataType + " declarando una " + os.DeclType);
             return;
         }
         Table.put(str, os);
-        System.out.println("Se agregó correctamente el símbolo " + str);
+        System.out.println("Se agregó correctamente el símbolo " + str + " de tipo " + os.DataType + " declarando una " + os.DeclType);
     }
 
    
