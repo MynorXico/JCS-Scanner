@@ -11,7 +11,7 @@ package php.scanner;
  */
 public class Tests {
     public static void main(String[] args){
-        ManejoScopes ms = new ManejoScopes();
+        ManejadorScopes ms = new ManejadorScopes();
         
         ms.AgregarSimbolo("1", new oSymbol());
         

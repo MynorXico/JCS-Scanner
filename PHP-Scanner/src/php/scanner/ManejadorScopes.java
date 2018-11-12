@@ -9,11 +9,11 @@ package php.scanner;
  *
  * @author mynor
  */
-public class ManejoScopes {
+public class ManejadorScopes {
     Scope s;
     Scope CurrentScope;
     
-    public ManejoScopes(){
+    public ManejadorScopes(){
         s = new Scope();
         CurrentScope = s;
     }

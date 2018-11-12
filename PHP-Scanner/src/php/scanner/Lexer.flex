@@ -29,7 +29,10 @@ label = [a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*
 
 // Operators
 minus = "-"
-ar_op = "+"|"*"|"/"|"%"
+plus = "+"
+times = "*"
+divide = "/"
+mod = "%"
 cmp_op = "<"|">"|"<="|">="|"=="|"!="
 log_op = "&&"|"||"
 neg_op = "!"
@@ -144,7 +147,12 @@ void            {chars += yytext().length(); lexeme=yytext(); lineNumber=yyline;
 [\n]|[\r\n]|[\n\r]            {chars = 0; lineNumber=yyline; lexeme="\n"; lineNumber = yyline;}
 {blank}{blank}+  {chars = 0; lineNumber=yyline; lexeme="\n"; lineNumber = yyline;}
 {ass_op}        {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.equals, yycolumn, yyline, yytext());}
-{ar_op} 	    {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.arop, yycolumn, yyline, yytext());}
+{plus} 	    {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.plus, yycolumn, yyline, yytext());}
+{times} 	    {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.times, yycolumn, yyline, yytext());}
+{divide} 	    {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.divide, yycolumn, yyline, yytext());}
+{mod} 	    {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.mod, yycolumn, yyline, yytext());}
+
+
 {cmp_op}	    {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.cmpop, yycolumn, yyline, yytext());}
 {log_op}        {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.logop, yycolumn, yyline, yytext());}
 {prnthss_A}       {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.prnthss_A, yycolumn, yyline, yytext());}

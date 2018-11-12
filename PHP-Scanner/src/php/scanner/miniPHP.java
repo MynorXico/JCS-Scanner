@@ -22,7 +22,7 @@ import javax.tools.*;
 public class miniPHP {
     public static void main(String[] args) throws IOException, BadLocationException, Exception{
         String root = new File(".").getCanonicalPath();
-        String sourcePath = root + "\\php\\scanner\\";
+        String sourcePath = root + "\\src\\php\\scanner\\";
         
         generarParser(sourcePath+"test1.cup");
         System.out.println("Parser Generado");
