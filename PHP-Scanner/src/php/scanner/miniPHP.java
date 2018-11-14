@@ -37,7 +37,7 @@ public class miniPHP {
             f = new File(sourcePath+"Lexer.java");
         }
         System.out.println("Lexer succesfully generated");
-        
+        /*
         System.out.println(new BufferedReader(new InputStreamReader(Runtime.getRuntime().exec("javac -Xlint -cp lib/java-cup-11a.jar \""+sourcePath+"Interfaz.java\" \""+ sourcePath+"parser.java\" \"" + sourcePath+"sym.java\" \"" + sourcePath+"TError.java\" \"" + sourcePath+"Lexer.java\"").getInputStream())).readLine());       
 
         String command = "java php.scanner.Interfaz";
@@ -49,7 +49,7 @@ public class miniPHP {
             System.out.println(new BufferedReader(new InputStreamReader(Runtime.getRuntime().exec(command).getInputStream())).readLine());       
         }catch(Exception e){
             System.out.println("Error compilando :S ");
-        }
+        }*/
       
     }
     

@@ -33,4 +33,10 @@ public class ManejadorScopes {
     public void AgregarSimbolo(String s, oSymbol o){
         CurrentScope.AddSymbol(s,o);
     }
+    
+    public oSymbol GetSimbolo(String s){
+        if(CurrentScope.CheckSymbol(s) != null){
+        }
+        return CurrentScope.CheckSymbol(s);
+    }
 }
