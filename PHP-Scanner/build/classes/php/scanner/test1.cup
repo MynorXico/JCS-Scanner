@@ -12,10 +12,8 @@ import javax.swing.text.BadLocationException;
 
 
 // Parser Code
-parser code
-{:
+parser code {:
     public LinkedList<TError> TablaES = new LinkedList<TError>();
-    public ManejadorScopes ms = new ManejadorScopes();
 
     public void syntax_error(Symbol s){
         String lexema = s.value.toString();
@@ -45,7 +43,11 @@ parser code
 :}  
 
 action code {: 
-    ManejadorScopes ms = new ManejadorScopes();
+   
+    boolean WritingParameters = false;
+    String CurrentIdFunction = "";
+    boolean ReadingParameters = false;
+    int CurrentParameter = 0;
 
     public boolean isNumber(String s){
         try{
@@ -73,7 +75,7 @@ action code {:
 
 terminal  String  minus, cmpop, logop,ident,pyc,t_int,t_double,t_bool, t_string, bolCnst,strConst,brackets,t_void,prnthss_A,prnthss_C,comma,clase,t_implements,t_interface,
                   t_if, t_else,t_for,t_while,t_return,t_break,print,t_this,brackets_A,brackets_C,neg,malloc,readInteger,
-                  ReadLine,dot,dblConst,t_null,t_newArr,getByte,setByte, equals, curly_A, curly_C, extend, t_new, plus, times, divide, mod;
+                  ReadLine,dot,dblConst,t_null,t_newArr,getByte,setByte, equals, curly_A, curly_C, extend, t_new, plus, times, divide, mod, constante, include, library;
 terminal String intCnst;
 
 
@@ -81,7 +83,7 @@ terminal String intCnst;
 non terminal String     VariableList, Program, Decl, VariableDecl,FunctionDecl,ClassDecl, DeclStar, InterfaceDecl,Variable,Type,Formals,StmtBlock,Field,
                         ExtendsIdentOptional,ImplementsIdentPlusCommaOptional,Prototype,Stmt,IfStmt,WhileStmt,ForStmt,BreakStmt,ReturnStmt,PrintStmt,FieldStar,
                         VariableDeclStar,StmtStar,LValue,Constant,Call,Actuals,LibCall,
-                         PrototypeStar, ExprOptional,  IdentList, ExprList;
+                         PrototypeStar, ExprOptional,  IdentList, ExprList, ConstDecl, IncludeStar, Include;
 non terminal String Expr;
 
 
@@ -99,12 +101,27 @@ start with Program;
 
 
 //GRAMATICA   
-    Program ::= Decl DeclStar
+    Program ::= IncludeStar Decl DeclStar
     ;
+    
+    IncludeStar ::= Include IncludeStar|
+    ;
+
+    Include ::= include library: l {: 
+        if(Directory.getInstancia().AddFile(l.split(">")[0].split("<")[1])){
+            System.out.println("/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/");
+            System.out.println("\t\t\t\t\t\t\t\t\tInicia Comprobación Semántica de " + l);
+            Directory.getInstancia().CheckSemantics(l.split(">")[0].split("<")[1]);
+            System.out.println("\t\t\t\t\t\t\t\t\tFinaliza Comprobación Semántica de " + l);
+            System.out.println("/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/");
+        };
+    :};
+
     Decl ::= VariableDecl|
              FunctionDecl|
              ClassDecl|
              InterfaceDecl|
+             ConstDecl|
              error pyc|
              error curly_C
     ;
@@ -112,7 +129,19 @@ start with Program;
     
     VariableDecl ::= Variable pyc
     ;
-    Variable ::= Type:t ident:i {: ms.AgregarSimbolo(i, new oSymbol(i, t, "Variable", null)); :}
+    ConstDecl ::= constante Variable pyc
+    ;
+    Variable ::= Type:t ident:i {: 
+        String data = null;
+        if(t.equals("int")||t.equals("double")){
+            data = "0";
+        }
+        oSymbol currentSymbol = new oSymbol(i, t, "Variable", data);
+        ManejadorScopes.getInstancia().AgregarSimbolo(i, currentSymbol);  
+        if(WritingParameters){
+            ManejadorScopes.getInstancia().GetSimbolo(CurrentIdFunction).AddParameters(currentSymbol);
+        }
+    :}
     ;
     Type ::= t_int:t {: RESULT = t; :}|
              t_double:t {: RESULT = t; :}|
@@ -121,8 +150,35 @@ start with Program;
              ident:t {: RESULT = t; :}|
              Type brackets
     ;
-    FunctionDecl ::= Type:t ident:i {: ms.AgregarSimbolo(i, new oSymbol(i, t, "Function", null)); :}	prnthss_A {: ms.NuevoScope(); :} Formals prnthss_C StmtBlock {: ms.FinalizaScope();:}|
-                    t_void:t ident:i {: ms.AgregarSimbolo(i, new oSymbol(i, t, "Function", null)); :}  prnthss_A {: ms.NuevoScope(); :} Formals prnthss_C StmtBlock {: ms.FinalizaScope(); :}
+    FunctionDecl ::= Type:t ident:i {:
+                    String data = null;
+                    if(t.equals("int")||t.equals("double")){
+                        data = "0";
+                    }
+                     ManejadorScopes.getInstancia().AgregarSimbolo(i, new oSymbol(i, t, "Function", data)); 
+                     CurrentIdFunction = i;  
+
+                    if(t.equals("int")){
+                        ManejadorScopes.getInstancia().GetSimbolo(i).Value = "0";
+                        RESULT="0";
+                    }else if(t.equals("double")){
+                        RESULT="0";
+                        ManejadorScopes.getInstancia().GetSimbolo(i).Value = "0";
+                    }else if(t.equals("bool")){
+                        RESULT="true";
+                        ManejadorScopes.getInstancia().GetSimbolo(i).Value = "false";
+                    }else if(t.equals("string")){
+                        RESULT = "\"\"";
+                        ManejadorScopes.getInstancia().GetSimbolo(i).Value = "\"\"";
+                    }
+                    
+                     
+                     
+                     :}	prnthss_A {: ManejadorScopes.getInstancia().NuevoScope(); WritingParameters = true; :} Formals prnthss_C {: WritingParameters = false; :} StmtBlock {: ManejadorScopes.getInstancia().FinalizaScope();:}|
+                    t_void:t ident:i {: 
+                    ManejadorScopes.getInstancia().AgregarSimbolo(i, new oSymbol(i, t, "Function", null)); 
+                    CurrentIdFunction = i; 
+                    :}  prnthss_A {: ManejadorScopes.getInstancia().NuevoScope(); WritingParameters = true; :} Formals prnthss_C {: WritingParameters = false; :} StmtBlock {: ManejadorScopes.getInstancia().FinalizaScope(); :}
     ;
     Formals ::= VariableList|;
 
@@ -131,7 +187,7 @@ start with Program;
     ;
     
 
-    ClassDecl ::= clase:t ident:i {: ms.AgregarSimbolo(i, new oSymbol(i, t, "Class", null)); :} ExtendsIdentOptional ImplementsIdentPlusCommaOptional curly_A {: ms.NuevoScope(); :} FieldStar {: ms.FinalizaScope(); :} curly_C		
+    ClassDecl ::= clase:t ident:i {: ManejadorScopes.getInstancia().AgregarSimbolo(i, new oSymbol(i, t, "Class", null)); :} ExtendsIdentOptional ImplementsIdentPlusCommaOptional curly_A {: ManejadorScopes.getInstancia().NuevoScope(); :} FieldStar {: ManejadorScopes.getInstancia().FinalizaScope(); :} curly_C		
     ;
     FieldStar ::= FieldStar Field |
     ;
@@ -145,9 +201,10 @@ start with Program;
 
 
     Field::= VariableDecl|
-             FunctionDecl
+             FunctionDecl|
+             ConstDecl
     ;
-    InterfaceDecl ::= t_interface:t ident:i {: ms.AgregarSimbolo(i, new oSymbol(i, t, "Interface", null)); :} curly_A {: ms.NuevoScope(); :}PrototypeStar {: ms.FinalizaScope(); :} curly_C
+    InterfaceDecl ::= t_interface:t ident:i {: ManejadorScopes.getInstancia().AgregarSimbolo(i, new oSymbol(i, t, "Interface", null)); :} curly_A {: ManejadorScopes.getInstancia().NuevoScope(); :}PrototypeStar {: ManejadorScopes.getInstancia().FinalizaScope(); :} curly_C
     ;
     PrototypeStar ::= PrototypeStar Prototype |;
     Prototype ::= Type ident prnthss_A Formals prnthss_C pyc|
@@ -155,9 +212,9 @@ start with Program;
     ;
     Stmt ::= Expr pyc|
                 pyc|
-                    {: ms.NuevoScope(); :}IfStmt {: ms.FinalizaScope(); :}|
-                    {: ms.NuevoScope(); :} WhileStmt {: ms.FinalizaScope(); :}|
-                    {: ms.NuevoScope(); :} ForStmt {: ms.FinalizaScope(); :}|
+                    {: ManejadorScopes.getInstancia().NuevoScope(); :}IfStmt {: ManejadorScopes.getInstancia().FinalizaScope(); :}|
+                    {: ManejadorScopes.getInstancia().NuevoScope(); :} WhileStmt {: ManejadorScopes.getInstancia().FinalizaScope(); :}|
+                    {: ManejadorScopes.getInstancia().NuevoScope(); :} ForStmt {: ManejadorScopes.getInstancia().FinalizaScope(); :}|
                     BreakStmt|
                     ReturnStmt|
                     PrintStmt|
@@ -169,7 +226,7 @@ start with Program;
     ;
 
     
-    VariableDeclStar ::=VariableDeclStar  VariableDecl |
+    VariableDeclStar ::=VariableDeclStar  VariableDecl | VariableDeclStar ConstDecl |
     ;
     StmtStar ::=  Stmt StmtStar| 
     ;
@@ -189,28 +246,31 @@ start with Program;
 
     Expr ::= LValue equals Expr|
              ident: i {: 
-                if(ms.GetSimbolo(i) != null){ // Existe
+                if(ManejadorScopes.getInstancia().GetSimbolo(i) != null){ // Existe
                     System.out.println("Se obtuvo correctamente el símbolo " + i);
-                    RESULT = ms.GetSimbolo(i).Value;
+                    RESULT = ManejadorScopes.getInstancia().GetSimbolo(i).Value;
                 }else {
                     System.out.println("No existe el símbolo " + i + " en el ámbito actual. ");
                 }
              :}|
              ident:i equals Expr: e {: 
-                if(ms.GetSimbolo(i)==null){
+                if(ManejadorScopes.getInstancia().GetSimbolo(i)==null){
                     System.out.println("El símbolo " + i + " no se encuentra en el ámbito actual.");
                 }else if(e==null){
                     System.out.println("No se puede asignar el valor de null a la variable.");
                 }else{
-                    if((ms.GetSimbolo(i).DataType.compareTo("int") == 0 && !isInteger(e)) 
-                            || (ms.GetSimbolo(i).DataType.compareTo("double") == 0 && !isNumber(e))
-                            || (ms.GetSimbolo(i).DataType.compareTo("bool") == 0 && !isBoolean(e))){
+                    if((ManejadorScopes.getInstancia().GetSimbolo(i).DataType.compareTo("int") == 0 && !isNumber(e)) 
+                            || (ManejadorScopes.getInstancia().GetSimbolo(i).DataType.compareTo("double") == 0 && !isNumber(e))
+                            || (ManejadorScopes.getInstancia().GetSimbolo(i).DataType.compareTo("bool") == 0 && !isBoolean(e))){
                         System.out.println("El dato a asignar no es del mismo tipo que la variable");
                     } else{
+                        String newData = e;
+                        if(ManejadorScopes.getInstancia().GetSimbolo(i).DataType.equals("int")){
+                            e = e.split("[.]")[0];
+                        }
                         System.out.println("Se asignó a " + i + " el valor de " + e);
-                        ms.GetSimbolo(i).Value = e;
-                    }
-                    
+                        ManejadorScopes.getInstancia().GetSimbolo(i).Value = e;
+                    }                   
                     
                 }
             
@@ -218,57 +278,66 @@ start with Program;
              Constant:c {:RESULT = c;:}|
              LValue|
              t_this|
-             Call|
+             Call:c {: RESULT = c;:}|
              prnthss_A Expr: e prnthss_C {:
                 RESULT  = e;
              :}|
              Expr: e1 plus Expr: e2 {:
-                if(e1 == null){
-                    System.out.println("La variable " + e1 + " nunca fue asignada.");
-                }else if (e2 == null){
-                    System.out.println("La variable " + e2 + " nunca fue asignada.");
-                }else if(ms.GetSimbolo(e1).DataType.equals("string") || ms.GetSimbolo(e1).DataType.equals("bool") || ms.GetSimbolo(e2).DataType.equals("string") || ms.GetSimbolo(e2).DataType.equals("bool") ){
+                try{
+                    if(e1 == null){
+                        System.out.println("La variable " + e1 + " nunca fue asignada.");
+                    }else if (e2 == null){
+                        System.out.println("La variable " + e2 + " nunca fue asignada.");
+                    }
+                    else{
+                        RESULT = String.valueOf(Double.valueOf(e1) + Double.valueOf(e2));
+                    }
+                }catch(Exception e){
                     System.out.println("Esta operación no está deinida para este tipo de dato.");
                 }
-                else{
-                    RESULT = String.valueOf(Double.valueOf(e1) + Double.valueOf(e2));
-                }
+                
             :}|
             Expr: e1 times Expr: e2 {:
-                if(e1 == null){
-                    System.out.println("La variable " + e1 + " nunca fue asignada.");
-                }else if (e2 == null){
-                    System.out.println("La variable " + e2 + " nunca fue asignada.");
-                }else if(ms.GetSimbolo(e1).DataType.equals("string") || ms.GetSimbolo(e1).DataType.equals("bool") || ms.GetSimbolo(e2).DataType.equals("string") || ms.GetSimbolo(e2).DataType.equals("bool") ){
+                try{
+                    if(e1 == null){
+                        System.out.println("La variable " + e1 + " nunca fue asignada.");
+                    }else if (e2 == null){
+                        System.out.println("La variable " + e2 + " nunca fue asignada.");
+                    }
+                    else{
+                        RESULT = String.valueOf(Double.valueOf(e1) * Double.valueOf(e2));
+                    }
+                }catch(Exception e){
                     System.out.println("Esta operación no está deinida para este tipo de dato.");
-                }
-                else{
-                    RESULT = String.valueOf(Double.valueOf(e1) * Double.valueOf(e2));
                 }
             :}|
             Expr: e1 divide Expr: e2 {:
-                if(e1 == null){
-                    System.out.println("La variable " + e1 + " nunca fue asignada.");
-                }else if (e2 == null){
-                    System.out.println("La variable " + e2 + " nunca fue asignada.");
-                }else if(ms.GetSimbolo(e1).DataType.equals("string") || ms.GetSimbolo(e1).DataType.equals("bool") || ms.GetSimbolo(e2).DataType.equals("string") || ms.GetSimbolo(e2).DataType.equals("bool") ){
+                try{
+                    if(e1 == null){
+                        System.out.println("La variable " + e1 + " nunca fue asignada.");
+                    }else if (e2 == null){
+                        System.out.println("La variable " + e2 + " nunca fue asignada.");
+                    }
+                    else{
+                        RESULT = String.valueOf(Double.valueOf(e1) / Double.valueOf(e2));
+                    }
+                }catch(Exception e){
                     System.out.println("Esta operación no está deinida para este tipo de dato.");
-                }
-                else{
-                    RESULT = String.valueOf(Double.valueOf(e1) / Double.valueOf(e2));
                 }
             :}|
 
             Expr: e1 mod Expr: e2 {:
-               if(e1 == null){
-                    System.out.println("La variable " + e1 + " nunca fue asignada.");
-                }else if (e2 == null){
-                    System.out.println("La variable " + e2 + " nunca fue asignada.");
-                }else if(ms.GetSimbolo(e1).DataType.equals("string") || ms.GetSimbolo(e1).DataType.equals("bool") || ms.GetSimbolo(e2).DataType.equals("string") || ms.GetSimbolo(e2).DataType.equals("bool") ){
+               try{
+                    if(e1 == null){
+                        System.out.println("La variable " + e1 + " nunca fue asignada.");
+                    }else if (e2 == null){
+                        System.out.println("La variable " + e2 + " nunca fue asignada.");
+                    }
+                    else{
+                        RESULT = String.valueOf(Double.valueOf(e1) % Double.valueOf(e2));
+                    }
+                }catch(Exception e){
                     System.out.println("Esta operación no está deinida para este tipo de dato.");
-                }
-                else{
-                    RESULT = String.valueOf(Double.valueOf(e1) % Double.valueOf(e2));
                 }
             :}|
 
@@ -294,18 +363,22 @@ start with Program;
                 }
              :}|
              Expr: e1 minus Expr: e2 {: 
-                 if(e1 == null){
-                    System.out.println("La variable " + e1 + " nunca fue asignada.");
-                }else if (e2 == null){
-                    System.out.println("La variable " + e2 + " nunca fue asignada.");
-                }else if(ms.GetSimbolo(e1).DataType.equals("string") || ms.GetSimbolo(e1).DataType.equals("bool") || ms.GetSimbolo(e2).DataType.equals("string") || ms.GetSimbolo(e2).DataType.equals("bool") ){
+                try{
+                    if(e1 == null){
+                        System.out.println("La variable " + e1 + " nunca fue asignada.");
+                    }else if (e2 == null){
+                        System.out.println("La variable " + e2 + " nunca fue asignada.");
+                    }
+                    else{
+                        RESULT = String.valueOf(Double.valueOf(e1) - Double.valueOf(e2));
+                    }
+                }catch(Exception e){
                     System.out.println("Esta operación no está deinida para este tipo de dato.");
                 }
-                else{
-                    RESULT = String.valueOf(Double.valueOf(e1) - Double.valueOf(e2));
-                }
              :}|
-             minus Expr|
+             minus Expr {:
+
+             :}|
              neg Expr:e {: 
                 if(e==null){
                     System.out.println("La variable " + e + " nunca fue asignada.");
@@ -325,13 +398,9 @@ start with Program;
     LValue ::= Expr dot ident|
                Expr brackets_A Expr brackets_C
     ;
-    Call ::= ident prnthss_A Actuals prnthss_C {:
-                // Código para llamada a función
-            :}|
-             Expr dot ident prnthss_A Actuals prnthss_C {:
-                // Código para llamada a función
-             :}|
-             Expr dot LibCall prnthss_A Actuals prnthss_C
+    Call ::= ident:i prnthss_A {:RESULT = ManejadorScopes.getInstancia().GetSimbolo(i).Value; CurrentIdFunction = i; WritingParameters = true; CurrentParameter = 0;:} Actuals prnthss_C {: WritingParameters = false; :}|
+             Expr dot ident:i prnthss_A  {:RESULT = ManejadorScopes.getInstancia().GetSimbolo(i).Value; CurrentIdFunction = i; WritingParameters = true; CurrentParameter = 0; :} Actuals prnthss_C {: WritingParameters = false; :}|
+             Expr dot LibCall: i prnthss_A {: RESULT = ManejadorScopes.getInstancia().GetSimbolo(i).Value; CurrentIdFunction = i; WritingParameters = true; CurrentParameter = 0; :}  Actuals prnthss_C  {: WritingParameters = false; :}
                 // Código para llamada a función
     ;
     LibCall ::= getByte prnthss_A Expr prnthss_C|
@@ -340,8 +409,35 @@ start with Program;
     Actuals ::= ExprList|
     ;
 
-    ExprList    ::= Expr|
-                    ExprList comma Expr;
+    ExprList    ::= Expr:e {:
+                        try{    
+                            if((ManejadorScopes.getInstancia().GetSimbolo(CurrentIdFunction).Parameters.get(CurrentParameter).DataType.equals("int")  && !isInteger(e))|| 
+                                (ManejadorScopes.getInstancia().GetSimbolo(CurrentIdFunction).Parameters.get(CurrentParameter).DataType.equals("double") && !isNumber(e))|| 
+                                (ManejadorScopes.getInstancia().GetSimbolo(CurrentIdFunction).Parameters.get(CurrentParameter).DataType.equals("bool") && !isBoolean(e))){
+                                System.out.println("El tipo de dato de los parámetros de la función no coinciden con la definición del mismo. ");
+                            }
+                        } catch (Exception ex){
+                            System.out.println("El número de parámetros no coincide con la definición del mismo");
+                        } 
+                        CurrentParameter++;
+                        
+                    :} |
+                    ExprList comma Expr:e {:
+                        try{
+                            if((ManejadorScopes.getInstancia().GetSimbolo(CurrentIdFunction).Parameters.get(CurrentParameter).DataType.equals("int")  && !isInteger(e))|| 
+                            (ManejadorScopes.getInstancia().GetSimbolo(CurrentIdFunction).Parameters.get(CurrentParameter).DataType.equals("double") && !isNumber(e))|| 
+                            (ManejadorScopes.getInstancia().GetSimbolo(CurrentIdFunction).Parameters.get(CurrentParameter).DataType.equals("bool") && !isBoolean(e))){
+                            System.out.println("El tipo de dato de los parámetros de la función no coinciden con la definición del mismo. ");
+                            }
+                            else if(CurrentParameter!=ManejadorScopes.getInstancia().GetSimbolo(CurrentIdFunction).Parameters.size()-1){
+                                System.out.println("Se reciben más de los parámetros necesarios para la función.");
+                            }
+                        }catch(Exception ex){
+                            System.out.println("El número de parámetros no coincide con la definición del mismo");
+                        }
+                        CurrentParameter++;                        
+
+                    :};
 
     Constant ::= intCnst:i {:RESULT = i;:}|
                  dblConst: i {: RESULT = i; :}|

@@ -5,6 +5,8 @@
  */
 package php.scanner;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author mynor
@@ -13,6 +15,7 @@ public class Tests {
     public static void main(String[] args){
         ManejadorScopes ms = new ManejadorScopes();
         ms.AgregarSimbolo("1", new oSymbol("1", "2", "3", "4"));
+        
         
         //Integer.valueOf("2.0");
         
@@ -40,6 +43,13 @@ public class Tests {
         }else if(c.equals("!=")){
             RESULT = String.valueOf(!e1.equals(e2));
         }
+        
+        Directory d = new Directory();
+        
+        d.AddFile("File1.frag");
+        d.AddFile("File2.frag");
+        d.AddFile("File3.frag");
+        d.AddFile("File1.frag");
     }
     
     

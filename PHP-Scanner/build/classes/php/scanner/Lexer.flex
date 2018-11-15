@@ -58,7 +58,7 @@ string_type = (\"([^\"\\\n]|\\.)*\")
 
 // C#
 rsrvd_words = int|double|bool|string|class|interface|null|this|extends|implements|for|while|if|else|return|break|NewArray|New|Array|new|array
-
+constante = const
 // Identifiers
 identifier={label}
 
@@ -68,6 +68,7 @@ multiline_comment = (("/*")~("*/"))
 comment = {single_line_comment}|{multiline_comment}
 multiline_error = ("/*")
 
+library = "<" {identifier}.{identifier} ">"
 
 // Control Structures
 if = if
@@ -100,6 +101,7 @@ newArr = NewArray
 getByte = GetByte
 setByte = SetByte
 new = new
+include = "#"include
 // ERR
 
 %{
@@ -108,7 +110,9 @@ public int lineNumber = 0;
 public int chars = 0;
 %}
 %%
-
+{library} {chars += yytext().length(); lexeme=yytext(); lineNumber=yyline; return new Symbol(sym.library, yycolumn, yyline, yytext());} 
+{include} {chars += yytext().length(); lexeme=yytext(); lineNumber=yyline; return new Symbol(sym.include, yycolumn, yyline, yytext());} 
+{constante} {chars += yytext().length(); lexeme=yytext(); lineNumber=yyline; return new Symbol(sym.constante, yycolumn, yyline, yytext());} 
 "-"     {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.minus, yycolumn, yyline, yytext());}
 {semicolon}     {chars += yytext().length(); lexeme=yytext();lineNumber=yyline; return new Symbol(sym.pyc, yycolumn, yyline, yytext());}
 {new}            {chars += yytext().length(); lexeme=yytext(); lineNumber=yyline; return new Symbol(sym.t_new, yycolumn, yyline, yytext());} 

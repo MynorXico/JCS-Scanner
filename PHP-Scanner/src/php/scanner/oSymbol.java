@@ -5,6 +5,8 @@
  */
 package php.scanner;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author mynor
@@ -14,11 +16,16 @@ public class oSymbol {
     String DataType;
     String DeclType;
     String Value;
+    ArrayList<oSymbol> Parameters = new ArrayList<oSymbol>();
     
     public oSymbol(String ID, String DataType, String DeclType, String Value){
         this.ID = ID;
         this.DataType = DataType;
         this.DeclType = DeclType;
         this.Value = Value;
+    }
+    
+    public void AddParameters(oSymbol symbol){
+        Parameters.add(symbol);
     }
 }

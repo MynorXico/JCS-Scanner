@@ -107,7 +107,7 @@ public class Interfaz extends javax.swing.JFrame {
 
         jLabel3.setFont(new java.awt.Font("Calibri", 1, 24)); // NOI18N
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel3.setText("C# Lexical Analyzer");
+        jLabel3.setText("C# Semantic Analyzer");
 
         taOriginal.setColumns(20);
         taOriginal.setRows(5);
@@ -174,6 +174,8 @@ public class Interfaz extends javax.swing.JFrame {
         try {
             
             interfazUnica.jTextArea1.setText("");
+            ManejadorScopes.ResetSymboltable();
+            Directory.resetDirectory();
             this.Analyze();
         } catch (Exception ex) {
             Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
@@ -233,7 +235,7 @@ public class Interfaz extends javax.swing.JFrame {
         if(fc.getSelectedFile()==null)
             return;
         filePath = fc.getSelectedFile().getPath();
-        
+        Directory.getInstancia().setPath(filePath.substring(0, filePath.lastIndexOf("\\")+1));
         FileReader fr=new FileReader(filePath);
         BufferedReader br = new BufferedReader(fr);
         String currentLine = br.readLine();

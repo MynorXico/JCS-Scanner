@@ -5,6 +5,8 @@
  */
 package php.scanner;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author mynor
@@ -12,6 +14,20 @@ package php.scanner;
 public class ManejadorScopes {
     Scope s;
     Scope CurrentScope;
+    private static  ManejadorScopes instanciaUnica;
+    ArrayList<String> PathsToRead = new ArrayList<String>();
+    
+    public static ManejadorScopes getInstancia(){
+        if(instanciaUnica == null){
+            instanciaUnica = new ManejadorScopes();
+        }
+        return instanciaUnica;
+    }
+    public static void ResetSymboltable(){
+        instanciaUnica = new ManejadorScopes();
+    }
+    
+    
     
     public ManejadorScopes(){
         s = new Scope();

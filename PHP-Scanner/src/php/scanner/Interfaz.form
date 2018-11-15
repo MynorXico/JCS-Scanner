@@ -135,7 +135,7 @@
           <Font name="Calibri" size="24" style="1"/>
         </Property>
         <Property name="horizontalAlignment" type="int" value="0"/>
-        <Property name="text" type="java.lang.String" value="C# Lexical Analyzer"/>
+        <Property name="text" type="java.lang.String" value="C# Semantic Analyzer"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JSeparator" name="jSeparator1">
