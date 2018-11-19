@@ -29,6 +29,12 @@ public class SymbolTable {
         Table.put(str, os);
         System.out.println("Se agregó correctamente el símbolo " + str + " de tipo " + os.DataType + " declarando una " + os.DeclType);
     }
+    
+    public void ImprTabla(){
+        Table.forEach((k,v) -> 
+            ManejadorScopes.getInstancia().AddRowToTable(v.toString())
+        );
+    }
 
    
 }

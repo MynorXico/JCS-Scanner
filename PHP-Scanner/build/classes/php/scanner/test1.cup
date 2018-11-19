@@ -45,9 +45,15 @@ parser code {:
 action code {: 
    
     boolean WritingParameters = false;
-    String CurrentIdFunction = "";
     boolean ReadingParameters = false;
     int CurrentParameter = 0;
+    String CurrentFile = "";
+    oSymbol CurrentFunction;
+    public void MostrarFilaColumnaError(int Fila, int Columna, String error) throws BadLocationException{
+      String newMssg = (Directory.GetCurrentFile() + " - Fila: " + Fila + " - Columna: " + Columna +" - " + error);
+      Interfaz.getInterfaz().AddTextToJTextArea(newMssg + "\n");
+    }
+
 
     public boolean isNumber(String s){
         try{
@@ -101,7 +107,7 @@ start with Program;
 
 
 //GRAMATICA   
-    Program ::= IncludeStar Decl DeclStar
+    Program ::= IncludeStar Decl DeclStar {: :}
     ;
     
     IncludeStar ::= Include IncludeStar|
@@ -111,6 +117,7 @@ start with Program;
         if(Directory.getInstancia().AddFile(l.split(">")[0].split("<")[1])){
             System.out.println("/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/");
             System.out.println("\t\t\t\t\t\t\t\t\tInicia Comprobación Semántica de " + l);
+            CurrentFile = l;
             Directory.getInstancia().CheckSemantics(l.split(">")[0].split("<")[1]);
             System.out.println("\t\t\t\t\t\t\t\t\tFinaliza Comprobación Semántica de " + l);
             System.out.println("/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/-/");
@@ -139,7 +146,7 @@ start with Program;
         oSymbol currentSymbol = new oSymbol(i, t, "Variable", data);
         ManejadorScopes.getInstancia().AgregarSimbolo(i, currentSymbol);  
         if(WritingParameters){
-            ManejadorScopes.getInstancia().GetSimbolo(CurrentIdFunction).AddParameters(currentSymbol);
+            ManejadorScopes.getInstancia().GetSimbolo(CurrentFunction.ID).AddParameters(currentSymbol);
         }
     :}
     ;
@@ -156,8 +163,8 @@ start with Program;
                         data = "0";
                     }
                      ManejadorScopes.getInstancia().AgregarSimbolo(i, new oSymbol(i, t, "Function", data)); 
-                     CurrentIdFunction = i;  
-
+                     String CurrentIdFunction = i;  
+                    CurrentFunction = ManejadorScopes.getInstancia().GetSimbolo(i);
                     if(t.equals("int")){
                         ManejadorScopes.getInstancia().GetSimbolo(i).Value = "0";
                         RESULT="0";
@@ -170,15 +177,28 @@ start with Program;
                     }else if(t.equals("string")){
                         RESULT = "\"\"";
                         ManejadorScopes.getInstancia().GetSimbolo(i).Value = "\"\"";
-                    }
-                    
+                    }    
                      
-                     
-                     :}	prnthss_A {: ManejadorScopes.getInstancia().NuevoScope(); WritingParameters = true; :} Formals prnthss_C {: WritingParameters = false; :} StmtBlock {: ManejadorScopes.getInstancia().FinalizaScope();:}|
+                     :}	prnthss_A {:
+                      ManejadorScopes.getInstancia().NuevoScope(i); WritingParameters = true;
+                     :} Formals prnthss_C {:
+                      WritingParameters = false; 
+                      :} StmtBlock {: 
+                      ManejadorScopes.getInstancia().FinalizaScope();
+                      :}
+                    |
                     t_void:t ident:i {: 
                     ManejadorScopes.getInstancia().AgregarSimbolo(i, new oSymbol(i, t, "Function", null)); 
-                    CurrentIdFunction = i; 
-                    :}  prnthss_A {: ManejadorScopes.getInstancia().NuevoScope(); WritingParameters = true; :} Formals prnthss_C {: WritingParameters = false; :} StmtBlock {: ManejadorScopes.getInstancia().FinalizaScope(); :}
+                     String CurrentIdFunction = i; 
+                    CurrentFunction = ManejadorScopes.getInstancia().GetSimbolo(i);
+                    :}  prnthss_A {:
+                     ManejadorScopes.getInstancia().NuevoScope(i); WritingParameters = true; 
+                     :} Formals prnthss_C {: 
+                     WritingParameters = false;
+                     :} StmtBlock {:
+                     ManejadorScopes.getInstancia().FinalizaScope();
+                     System.out.println("Finaliza void");
+                     :}
     ;
     Formals ::= VariableList|;
 
@@ -187,7 +207,10 @@ start with Program;
     ;
     
 
-    ClassDecl ::= clase:t ident:i {: ManejadorScopes.getInstancia().AgregarSimbolo(i, new oSymbol(i, t, "Class", null)); :} ExtendsIdentOptional ImplementsIdentPlusCommaOptional curly_A {: ManejadorScopes.getInstancia().NuevoScope(); :} FieldStar {: ManejadorScopes.getInstancia().FinalizaScope(); :} curly_C		
+    ClassDecl ::= clase:t ident:i {: ManejadorScopes.getInstancia().AgregarSimbolo(i, new oSymbol(i, t, "Class", null)); :} ExtendsIdentOptional ImplementsIdentPlusCommaOptional curly_A {: ManejadorScopes.getInstancia().NuevoScope(i); :} FieldStar curly_C	 {: 
+    System.out.println("Finaliza Clase");
+    ManejadorScopes.getInstancia().FinalizaScope(); 
+    :}
     ;
     FieldStar ::= FieldStar Field |
     ;
@@ -204,7 +227,7 @@ start with Program;
              FunctionDecl|
              ConstDecl
     ;
-    InterfaceDecl ::= t_interface:t ident:i {: ManejadorScopes.getInstancia().AgregarSimbolo(i, new oSymbol(i, t, "Interface", null)); :} curly_A {: ManejadorScopes.getInstancia().NuevoScope(); :}PrototypeStar {: ManejadorScopes.getInstancia().FinalizaScope(); :} curly_C
+    InterfaceDecl ::= t_interface:t ident:i {: ManejadorScopes.getInstancia().AgregarSimbolo(i, new oSymbol(i, t, "Interface", null)); :} curly_A {: ManejadorScopes.getInstancia().NuevoScope(i); :}PrototypeStar {: ManejadorScopes.getInstancia().FinalizaScope(); :} curly_C
     ;
     PrototypeStar ::= PrototypeStar Prototype |;
     Prototype ::= Type ident prnthss_A Formals prnthss_C pyc|
@@ -212,9 +235,9 @@ start with Program;
     ;
     Stmt ::= Expr pyc|
                 pyc|
-                    {: ManejadorScopes.getInstancia().NuevoScope(); :}IfStmt {: ManejadorScopes.getInstancia().FinalizaScope(); :}|
-                    {: ManejadorScopes.getInstancia().NuevoScope(); :} WhileStmt {: ManejadorScopes.getInstancia().FinalizaScope(); :}|
-                    {: ManejadorScopes.getInstancia().NuevoScope(); :} ForStmt {: ManejadorScopes.getInstancia().FinalizaScope(); :}|
+                    {: ManejadorScopes.getInstancia().NuevoScope("if"); :}IfStmt {: ManejadorScopes.getInstancia().FinalizaScope(); :}|
+                    {: ManejadorScopes.getInstancia().NuevoScope("while"); :} WhileStmt {: ManejadorScopes.getInstancia().FinalizaScope(); :}|
+                    {: ManejadorScopes.getInstancia().NuevoScope("for"); :} ForStmt {: ManejadorScopes.getInstancia().FinalizaScope(); :}|
                     BreakStmt|
                     ReturnStmt|
                     PrintStmt|
@@ -234,7 +257,19 @@ start with Program;
     ;
     ForStmt ::= t_for prnthss_A ExprOptional pyc Expr pyc ExprOptional prnthss_C Stmt
     ;
-    ReturnStmt ::= t_return ExprOptional pyc
+    ReturnStmt ::= t_return ExprOptional: e {:
+        if(CurrentFunction.DataType.equals("double") && (e==null || !isNumber(e))){
+            System.out.println("El valor de retorno debe ser del mismo tipo de dato que la función.");
+        } else if(CurrentFunction.DataType.equals("int") && (e==null || !isInteger(e))){
+            System.out.println("El valor de retorno debe ser del mismo tipo de dato que la función.");
+        } else if(CurrentFunction.DatatType.equals("string") && (e==null)){
+            System.out.println("El valor de retorno debe ser del mismo tipo de dato que la función");
+        } else if(CurrentFunction.DataType.equals("bool") && !isBoolean(e)){
+            System.out.println("El valor de retorno debe ser del mismo tipo de dato que la función");
+        } else if(CurrentFunction.DataType.equals("void") && e!=null){
+            System.out.println("El valor de retorno debe ser del mismo tipo de dato que la función.");
+        }
+    :} pyc
     ;
     BreakStmt ::= t_break pyc
     ;
@@ -242,7 +277,7 @@ start with Program;
     ;
     
     
-    ExprOptional    ::= Expr| ;
+    ExprOptional    ::= Expr:e {: RESULT =  e; :}| {: RESULT = null; :} ;
 
     Expr ::= LValue equals Expr|
              ident: i {: 
@@ -250,18 +285,22 @@ start with Program;
                     System.out.println("Se obtuvo correctamente el símbolo " + i);
                     RESULT = ManejadorScopes.getInstancia().GetSimbolo(i).Value;
                 }else {
+                    MostrarFilaColumnaError(iright, ileft, "No existe el símbolo " + i + " en el ámbito actual. ");
                     System.out.println("No existe el símbolo " + i + " en el ámbito actual. ");
                 }
              :}|
              ident:i equals Expr: e {: 
                 if(ManejadorScopes.getInstancia().GetSimbolo(i)==null){
+                    MostrarFilaColumnaError(iright, ileft, "No existe el símbolo " + i + " en el ámbito actual. ");
                     System.out.println("El símbolo " + i + " no se encuentra en el ámbito actual.");
                 }else if(e==null){
+                    MostrarFilaColumnaError(iright, ileft, "No se puede asignar el valor de null a la variable.");
                     System.out.println("No se puede asignar el valor de null a la variable.");
                 }else{
                     if((ManejadorScopes.getInstancia().GetSimbolo(i).DataType.compareTo("int") == 0 && !isNumber(e)) 
                             || (ManejadorScopes.getInstancia().GetSimbolo(i).DataType.compareTo("double") == 0 && !isNumber(e))
                             || (ManejadorScopes.getInstancia().GetSimbolo(i).DataType.compareTo("bool") == 0 && !isBoolean(e))){
+                        MostrarFilaColumnaError(iright, ileft, "El dato a asignar no es del mismo tipo que la variable");
                         System.out.println("El dato a asignar no es del mismo tipo que la variable");
                     } else{
                         String newData = e;
@@ -398,9 +437,49 @@ start with Program;
     LValue ::= Expr dot ident|
                Expr brackets_A Expr brackets_C
     ;
-    Call ::= ident:i prnthss_A {:RESULT = ManejadorScopes.getInstancia().GetSimbolo(i).Value; CurrentIdFunction = i; WritingParameters = true; CurrentParameter = 0;:} Actuals prnthss_C {: WritingParameters = false; :}|
-             Expr dot ident:i prnthss_A  {:RESULT = ManejadorScopes.getInstancia().GetSimbolo(i).Value; CurrentIdFunction = i; WritingParameters = true; CurrentParameter = 0; :} Actuals prnthss_C {: WritingParameters = false; :}|
-             Expr dot LibCall: i prnthss_A {: RESULT = ManejadorScopes.getInstancia().GetSimbolo(i).Value; CurrentIdFunction = i; WritingParameters = true; CurrentParameter = 0; :}  Actuals prnthss_C  {: WritingParameters = false; :}
+    Call ::= ident:i prnthss_A {:
+            CurrentFunction = ManejadorScopes.getInstancia().GetSimbolo(i);
+            if(ManejadorScopes.getInstancia().GetSimbolo(i)==null){
+                System.out.println("No se encuentra el símbolo en el ámbito actual"); 
+            }else{
+                RESULT = ManejadorScopes.getInstancia().GetSimbolo(i).Value; 
+                CurrentFunction = ManejadorScopes.getInstancia().GetSimbolo(i);
+                WritingParameters = true; 
+                CurrentParameter = 0;
+            }
+             RESULT = "null";
+             :} 
+             
+             Actuals {:
+                if(ManejadorScopes.getInstancia().GetSimbolo(i)==null) return null;
+             :} prnthss_C {: 
+              if(ManejadorScopes.getInstancia().GetSimbolo(i)==null){
+            }else{
+                WritingParameters = false;
+            }
+
+
+             :}
+             |
+             ident:i1 dot ident:i prnthss_A  {:
+             System.out.println("Expr dot ident");
+             if(ManejadorScopes.getInstancia().GetSimbolo(i1)==null){
+                System.out.println("No se encuentra el símbolo en el ámbito actual");
+                return null;                 
+             }
+             String clasePerteneceA = ManejadorScopes.getInstancia().GetSimbolo(i1).DataType;
+             oSymbol functionSymbol = ManejadorScopes.getInstancia().GetFuncion(clasePerteneceA, i);
+
+             RESULT = functionSymbol.Value; 
+             CurrentFunction = functionSymbol; 
+             WritingParameters = true; 
+             CurrentParameter = 0; 
+             :} 
+             Actuals prnthss_C {: 
+             WritingParameters = false; 
+             :}
+             |
+             Expr dot LibCall: i prnthss_A {: RESULT = ManejadorScopes.getInstancia().GetSimbolo(i).Value; CurrentFunction = ManejadorScopes.getInstancia().GetSimbolo(i); WritingParameters = true; CurrentParameter = 0; :}  Actuals prnthss_C  {: WritingParameters = false; :}
                 // Código para llamada a función
     ;
     LibCall ::= getByte prnthss_A Expr prnthss_C|
@@ -410,32 +489,47 @@ start with Program;
     ;
 
     ExprList    ::= Expr:e {:
-                        try{    
-                            if((ManejadorScopes.getInstancia().GetSimbolo(CurrentIdFunction).Parameters.get(CurrentParameter).DataType.equals("int")  && !isInteger(e))|| 
-                                (ManejadorScopes.getInstancia().GetSimbolo(CurrentIdFunction).Parameters.get(CurrentParameter).DataType.equals("double") && !isNumber(e))|| 
-                                (ManejadorScopes.getInstancia().GetSimbolo(CurrentIdFunction).Parameters.get(CurrentParameter).DataType.equals("bool") && !isBoolean(e))){
-                                System.out.println("El tipo de dato de los parámetros de la función no coinciden con la definición del mismo. ");
+                        if(CurrentFunction == null){
+                            System.out.println("No se encuentra el símbolo en el contexto actual");
+                        }else{
+                             try{    
+                                if((CurrentFunction.Parameters.get(CurrentParameter).DataType.equals("int")  && !isInteger(e))|| 
+                                    (CurrentFunction.Parameters.get(CurrentParameter).DataType.equals("double") && !isNumber(e))|| 
+                                    (CurrentFunction.Parameters.get(CurrentParameter).DataType.equals("bool") && !isBoolean(e))){
+                                    MostrarFilaColumnaError(eright, eleft, "El tipo de dato de los parámetros de la función no coinciden con la definición del mismo. ");                          
+                                    System.out.println("El tipo de dato de los parámetros de la función no coinciden con la definición del mismo. ");
+                                }
+                            } catch (Exception ex){
+                                MostrarFilaColumnaError(eright, eleft, "El número de parámetros no coincide con la definición del mismo");                          
+                                System.out.println("El número de parámetros no coincide con la definición del mismo");
+                            } 
+                            CurrentParameter++; 
                             }
-                        } catch (Exception ex){
-                            System.out.println("El número de parámetros no coincide con la definición del mismo");
-                        } 
-                        CurrentParameter++;
+                       
                         
                     :} |
                     ExprList comma Expr:e {:
-                        try{
-                            if((ManejadorScopes.getInstancia().GetSimbolo(CurrentIdFunction).Parameters.get(CurrentParameter).DataType.equals("int")  && !isInteger(e))|| 
-                            (ManejadorScopes.getInstancia().GetSimbolo(CurrentIdFunction).Parameters.get(CurrentParameter).DataType.equals("double") && !isNumber(e))|| 
-                            (ManejadorScopes.getInstancia().GetSimbolo(CurrentIdFunction).Parameters.get(CurrentParameter).DataType.equals("bool") && !isBoolean(e))){
-                            System.out.println("El tipo de dato de los parámetros de la función no coinciden con la definición del mismo. ");
+                        if(CurrentFunction == null){
+
+                        }else{
+                            try{
+                                if((CurrentFunction.Parameters.get(CurrentParameter).DataType.equals("int")  && !isInteger(e))|| 
+                                (CurrentFunction.Parameters.get(CurrentParameter).DataType.equals("double") && !isNumber(e))|| 
+                                (CurrentFunction.Parameters.get(CurrentParameter).DataType.equals("bool") && !isBoolean(e))){
+                                    MostrarFilaColumnaError(eright, eleft, "El tipo de dato de los parámetros de la función no coinciden con la definición del mismo. ");                          
+                                    System.out.println("El tipo de dato de los parámetros de la función no coinciden con la definición del mismo. ");
+                                }
+                                else if(CurrentParameter!=CurrentFunction.Parameters.size()-1 && !(CurrentParameter!=CurrentFunction.Parameters.size()-1)){
+                                    MostrarFilaColumnaError(eright, eleft, "Se reciben más de los parámetros necesarios para la función.");                          
+                                    System.out.println("Se reciben más de los parámetros necesarios para la función.");
+                                }
+                            }catch(Exception ex){
+                                MostrarFilaColumnaError(eright, eleft, "El número de parámetros no coincide con la definición del mismo");                          
+                                System.out.println("El número de parámetros no coincide con la definición del mismo");
                             }
-                            else if(CurrentParameter!=ManejadorScopes.getInstancia().GetSimbolo(CurrentIdFunction).Parameters.size()-1){
-                                System.out.println("Se reciben más de los parámetros necesarios para la función.");
-                            }
-                        }catch(Exception ex){
-                            System.out.println("El número de parámetros no coincide con la definición del mismo");
+                            CurrentParameter++;  
                         }
-                        CurrentParameter++;                        
+                                              
 
                     :};
 

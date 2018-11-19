@@ -19,14 +19,17 @@ public class Scope {
     public ArrayList<Scope> Scopes = new ArrayList();
     public Scope Parent;
     SymbolTable Table = new SymbolTable();
-
+    public String name;
+    
     public Scope() {
          //To change body of generated methods, choose Tools | Templates.
     }
     
     
-    public boolean AddScope(Scope s){
+    public boolean AddScope(Scope s, String scopeName){
+        s.name = scopeName;
         boolean add = Scopes.add(s);
+        
         return add;
     }
     
@@ -51,11 +54,44 @@ public class Scope {
         return null;
     }
     
+    public Scope CheckScope(String s){
+        Scope currentScope = this;
+        if(currentScope.name.equals(s)){
+            return currentScope;
+        }else{
+            while(currentScope.Parent != null){
+                currentScope = currentScope.Parent;
+                for(int i = 0; i < currentScope.Scopes.size(); i++){
+                    if(currentScope.Scopes.get(i).name.equals(s)){
+                        return currentScope.Scopes.get(i);
+                    }
+                }
+            }
+        }
+        return null;
+
+    }
+    
     public void AddSymbol(String str, oSymbol os){
         if(CheckSymbol(str)!=null){       // Ya existe
             System.out.println("Ya existe un identificador con el nombre " + str);
         }else{
             Table.Add(str, os);
+        }
+    }
+    public void GenerateSymbolTable(){
+        Scope cs = this;
+        
+        
+        cs.Table.ImprTabla();
+        for(int i = 0; i < cs.Scopes.size(); i++){            
+            //cs = cs.Scopes.get(i);
+            
+            ManejadorScopes.getInstancia().AddRowToTable("╠════════════════════╬════════════════════╬════════════════════╬════════════════════╣\n║                    ║           INICIA " + oSymbol.RightPad("║  "+cs.Scopes.get(i).name,10) +"             ║                    ║");
+            //cs.GenerateSymbolTable();
+            cs.Scopes.get(i).GenerateSymbolTable();
+            //if(cs.name!=null)
+            ManejadorScopes.getInstancia().AddRowToTable("╠════════════════════╬════════════════════╬════════════════════╬════════════════════╣\n║                    ║           FIN    " + oSymbol.RightPad("║  "+ cs.Scopes.get(i).name,10) +"             ║                    ║");            
         }
     }
 }

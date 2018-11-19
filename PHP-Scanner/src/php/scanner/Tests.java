@@ -5,6 +5,7 @@
  */
 package php.scanner;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -12,20 +13,20 @@ import java.util.ArrayList;
  * @author mynor
  */
 public class Tests {
-    public static void main(String[] args){
-        ManejadorScopes ms = new ManejadorScopes();
-        ms.AgregarSimbolo("1", new oSymbol("1", "2", "3", "4"));
-        
+    public static void main(String[] args) throws IOException{
+        ManejadorScopes.getInstancia().AgregarSimbolo("1", new oSymbol("1", "2", "3", "4"));
+        ManejadorScopes.getInstancia().NuevoScope("Sope1");
+        ManejadorScopes.getInstancia().NuevoScope("Scope2");
         
         //Integer.valueOf("2.0");
         
         String s = "1";
         String val = "Nuevo valor";
-        if(ms.GetSimbolo(s) == null){
+        if(ManejadorScopes.getInstancia().GetSimbolo(s) == null){
             System.out.println("El símbolo " + s + " no se encuentra en el ámbito actual.");
         }
         else{
-            ms.GetSimbolo(s).Value = val;
+            ManejadorScopes.getInstancia().GetSimbolo(s).Value = val;
         }
         
         String c = "==";
@@ -50,6 +51,7 @@ public class Tests {
         d.AddFile("File2.frag");
         d.AddFile("File3.frag");
         d.AddFile("File1.frag");
+        
     }
     
     

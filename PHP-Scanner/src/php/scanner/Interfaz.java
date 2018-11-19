@@ -305,8 +305,7 @@ public class Interfaz extends javax.swing.JFrame {
             AddTextToJTextArea("Ocurrio un error irrecuperable.");
             System.out.println("Terminó el análisis con errores.");          
         }
-        
-        
+        ManejadorScopes.getInstancia().CreateSymbolTable();
         String ResultadoConsola = "";
         String ResultadoArchivoErrores = "";
         String ResultadoArchivoSalida = "";

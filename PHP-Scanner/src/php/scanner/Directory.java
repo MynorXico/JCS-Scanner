@@ -20,6 +20,12 @@ import java_cup.runtime.Scanner;
 public class Directory {
     private static ArrayList<String> FilesToRead = new ArrayList<String>();
     private static String Path;
+    private static String CurrentFile="";
+
+    public static String GetCurrentFile(){
+        return CurrentFile;
+    }
+
     
     public static boolean AddFile(String fileName){
         File f = new File(Path+fileName);
@@ -28,8 +34,9 @@ public class Directory {
             return false;
         }
         if(!FilesToRead.contains(fileName)){
-            System.out.println("Se agregó la librefía " + Path + fileName);
+            System.out.println("Se agregó la librería " + Path + fileName);
             FilesToRead.add(Path+fileName);
+            CurrentFile = fileName;
             return true;
         }else{
             System.out.println("La librería " + fileName + " se definió previamente.");
@@ -63,5 +70,6 @@ public class Directory {
         Lexer lexer = new Lexer(reader);
         parser p = new parser(lexer);
         p.parse();
+        CurrentFile = "";
     }
 }

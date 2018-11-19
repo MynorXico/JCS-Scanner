@@ -5,6 +5,10 @@
  */
 package php.scanner;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -12,10 +16,20 @@ import java.util.ArrayList;
  * @author mynor
  */
 public class ManejadorScopes {
-    Scope s;
+    static Scope s;
     Scope CurrentScope;
     private static  ManejadorScopes instanciaUnica;
     ArrayList<String> PathsToRead = new ArrayList<String>();
+    private static String TablaActual = "";
+    
+    
+    public void AddRowToTable(String s){
+        TablaActual = TablaActual + s+"\n";
+    }
+    
+    public String GetTablaActual(){
+        return TablaActual;
+    }
     
     public static ManejadorScopes getInstancia(){
         if(instanciaUnica == null){
@@ -25,6 +39,7 @@ public class ManejadorScopes {
     }
     public static void ResetSymboltable(){
         instanciaUnica = new ManejadorScopes();
+        TablaActual = "";
     }
     
     
@@ -34,9 +49,9 @@ public class ManejadorScopes {
         CurrentScope = s;
     }
     
-    public void NuevoScope(){
+    public void NuevoScope(String scopeName){
         Scope ns = new Scope(CurrentScope);
-        CurrentScope.AddScope(ns);
+        CurrentScope.AddScope(ns, scopeName);
         CurrentScope = ns;
         System.out.println("Se creó un nuevo ámbito.");
     }
@@ -55,4 +70,40 @@ public class ManejadorScopes {
         }
         return CurrentScope.CheckSymbol(s);
     }
+    public void CreateSymbolTable() throws IOException{
+        String output = "";
+        //String fileName = Directory.getInstancia().getPath()+"SymbolTable.txt";
+        String fileName = "SymbolTable.txt";
+        
+        File f = new File(fileName);
+        if(f.exists())
+            f.delete();
+        
+        // writer.append(str);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, true))) {
+            // writer.append(str);
+            ManejadorScopes.s.GenerateSymbolTable();
+            writer.append("╔════════════════════╦════════════════════╦════════════════════╦════════════════════╗\n");
+            writer.append("║       Symbol       ║      DataType      ║     SymbolType     ║       Value        ║\n");
+            writer.append(ManejadorScopes.getInstancia().GetTablaActual());
+            writer.append("╚════════════════════╩════════════════════╩════════════════════╩════════════════════╝");
+            ManejadorScopes.getInstancia();
+        }
+    }
+    public Scope BuscarAmbito(String s){
+       
+        
+    
+        return new Scope();
+    }
+    
+    public oSymbol GetFuncion(String scope, String functionName){
+        Scope ns = ManejadorScopes.getInstancia().CurrentScope.CheckScope(scope);
+        if(ns == null)
+            return null;
+        return ns.Table.Search(functionName);    
+        
+    }
+    
+    
 }
