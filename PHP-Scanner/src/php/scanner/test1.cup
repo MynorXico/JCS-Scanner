@@ -255,14 +255,14 @@ start with Program;
     ;
     WhileStmt ::= t_while prnthss_A Expr prnthss_C Stmt										
     ;
-    ForStmt ::= t_for prnthss_A ExprOptional pyc Expr pyc ExprOptional prnthss_C Stmt
+    ForStmt ::= t_for prnthss_A ExprOptional {: System.out.println("Finaliza primer");:}pyc Expr pyc ExprOptional prnthss_C Stmt
     ;
     ReturnStmt ::= t_return ExprOptional: e {:
         if(CurrentFunction.DataType.equals("double") && (e==null || !isNumber(e))){
             System.out.println("El valor de retorno debe ser del mismo tipo de dato que la función.");
         } else if(CurrentFunction.DataType.equals("int") && (e==null || !isInteger(e))){
             System.out.println("El valor de retorno debe ser del mismo tipo de dato que la función.");
-        } else if(CurrentFunction.DatatType.equals("string") && (e==null)){
+        } else if(CurrentFunction.DataType.equals("string") && (e==null)){
             System.out.println("El valor de retorno debe ser del mismo tipo de dato que la función");
         } else if(CurrentFunction.DataType.equals("bool") && !isBoolean(e)){
             System.out.println("El valor de retorno debe ser del mismo tipo de dato que la función");
@@ -441,17 +441,18 @@ start with Program;
             CurrentFunction = ManejadorScopes.getInstancia().GetSimbolo(i);
             if(ManejadorScopes.getInstancia().GetSimbolo(i)==null){
                 System.out.println("No se encuentra el símbolo en el ámbito actual"); 
+             RESULT = "null";
             }else{
                 RESULT = ManejadorScopes.getInstancia().GetSimbolo(i).Value; 
                 CurrentFunction = ManejadorScopes.getInstancia().GetSimbolo(i);
+                RESULT = CurrentFunction.Value;
                 WritingParameters = true; 
                 CurrentParameter = 0;
             }
-             RESULT = "null";
              :} 
              
              Actuals {:
-                if(ManejadorScopes.getInstancia().GetSimbolo(i)==null) return null;
+                if(ManejadorScopes.getInstancia().GetSimbolo(i)==null) ;
              :} prnthss_C {: 
               if(ManejadorScopes.getInstancia().GetSimbolo(i)==null){
             }else{
@@ -469,11 +470,18 @@ start with Program;
              }
              String clasePerteneceA = ManejadorScopes.getInstancia().GetSimbolo(i1).DataType;
              oSymbol functionSymbol = ManejadorScopes.getInstancia().GetFuncion(clasePerteneceA, i);
+             if(functionSymbol == null){
+                 CurrentFunction = functionSymbol;
+                 System.out.println("No se encuentra la función en la tabla de símbolos");
+                 RESULT = null;
+             }else{
+                RESULT = functionSymbol.Value; 
+                CurrentFunction = functionSymbol; 
+                WritingParameters = true; 
+                CurrentParameter = 0; 
+             }
 
-             RESULT = functionSymbol.Value; 
-             CurrentFunction = functionSymbol; 
-             WritingParameters = true; 
-             CurrentParameter = 0; 
+            
              :} 
              Actuals prnthss_C {: 
              WritingParameters = false; 
