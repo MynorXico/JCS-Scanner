@@ -83,10 +83,10 @@ public class ManejadorScopes {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, true))) {
             // writer.append(str);
             ManejadorScopes.s.GenerateSymbolTable();
-            writer.append("╔════════════════════╦════════════════════╦════════════════════╦════════════════════╗\n");
-            writer.append("║       Symbol       ║      DataType      ║     SymbolType     ║       Value        ║\n");
+            writer.append("╔══════════════════════════════╦══════════════════════════════╦══════════════════════════════╦══════════════════════════════╗\n");
+            writer.append("║            Symbol            ║           DataType           ║          SymbolType          ║            Value             ║\n");
             writer.append(ManejadorScopes.getInstancia().GetTablaActual());
-            writer.append("╚════════════════════╩════════════════════╩════════════════════╩════════════════════╝");
+            writer.append("╚══════════════════════════════╩══════════════════════════════╩══════════════════════════════╩══════════════════════════════╝");
             ManejadorScopes.getInstancia();
         }
     }

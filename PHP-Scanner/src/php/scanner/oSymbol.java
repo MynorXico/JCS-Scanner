@@ -30,8 +30,8 @@ public class oSymbol {
     
     @Override
     public String toString(){
-        String s1 = "╠════════════════════╬════════════════════╬════════════════════╬════════════════════╣\n";
-        String s2 = "║"+RightPad(ID,20)+"║" + RightPad(DataType,20)+"║" + RightPad(DeclType,20)+"║" + RightPad(Value,20)+"║";
+        String s1 = "╠══════════════════════════════╬══════════════════════════════╬══════════════════════════════╬══════════════════════════════╣\n";
+        String s2 = "║"+RightPad(ID,30)+"║" + RightPad(DataType,30)+"║" + RightPad(DeclType,30)+"║" + RightPad(Value,30)+"║";
             
         return s1+s2;
     }

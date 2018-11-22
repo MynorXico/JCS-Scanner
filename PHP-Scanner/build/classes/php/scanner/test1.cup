@@ -235,7 +235,7 @@ start with Program;
     InterfaceDecl ::= t_interface:t ident:i {: ManejadorScopes.getInstancia().AgregarSimbolo(i, new oSymbol(i, t, "Interface", null)); :} curly_A {: ManejadorScopes.getInstancia().NuevoScope(i); :}PrototypeStar {: ManejadorScopes.getInstancia().FinalizaScope(); :} curly_C
     ;
     PrototypeStar ::= PrototypeStar Prototype |;
-    Prototype ::= Type ident prnthss_A Formals prnthss_C pyc|
+    Prototype ::= Type:t ident: i prnthss_A {: ManejadorScopes.getInstancia().NuevoScope(i) ;ManejadorScopes.getInstancia().AgregarSimbolo(i, new oSymbol(i, t, "Prototipo", "0" )); :} Formals prnthss_C {:ManejadorScopes.getInstancia().FinalizaScope();:} pyc|
                   t_void ident prnthss_A Formals prnthss_C pyc
     ;
     Stmt ::= Expr pyc|

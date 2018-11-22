@@ -87,11 +87,11 @@ public class Scope {
         for(int i = 0; i < cs.Scopes.size(); i++){            
             //cs = cs.Scopes.get(i);
             
-            ManejadorScopes.getInstancia().AddRowToTable("╠════════════════════╬════════════════════╬════════════════════╬════════════════════╣\n║                    ║           INICIA " + oSymbol.RightPad("║  "+cs.Scopes.get(i).name,15) +"        ║                    ║");
+            ManejadorScopes.getInstancia().AddRowToTable("╠══════════════════════════════╬══════════════════════════════╬══════════════════════════════╬══════════════════════════════╣\n║                              ║           INICIA " + oSymbol.RightPad("          ║       "+cs.Scopes.get(i).name,15) +"                   ║                              ║");
             //cs.GenerateSymbolTable();
             cs.Scopes.get(i).GenerateSymbolTable();
             //if(cs.name!=null)
-            ManejadorScopes.getInstancia().AddRowToTable("╠════════════════════╬════════════════════╬════════════════════╬════════════════════╣\n║                    ║           FIN    " + oSymbol.RightPad("║  "+ cs.Scopes.get(i).name,15) +"        ║                    ║");            
+            ManejadorScopes.getInstancia().AddRowToTable("╠══════════════════════════════╬══════════════════════════════╬══════════════════════════════╬══════════════════════════════╣\n║                              ║       FIN    " + oSymbol.RightPad("              ║       "+ cs.Scopes.get(i).name,15) +"                   ║                              ║");            
         }
     }
 }
