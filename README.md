@@ -1,16 +1,15 @@
-
 Universidad Rafael Landívar</br>
-Lenguajes Formales y Autómatas</br>
-Proyecto No. 1</br>
+Compiladores </br>
+Proyecto No. 2</br>
 
 # Analizador Léxico
-El proyecto consiste en un analizador léxico para el lenguaje PHP utilizando la herramienta JFlex.
+El proyecto consiste en un analizador sintáctico para el lenguaje DECAF utilizando la herramienta JFlex.
 ## Manual de Usuario
 
-A continuación se describe la forma de uso del software "miniPHP". El uso del mismo se divide en varias etapas:
+A continuación se describe la forma de uso del software "DECAF". El uso del mismo se divide en varias etapas:
 
  - Iniciando la aplicación
- - Cargando archivo .php
+ - Cargando archivo .frag
  - Analizando el archivo
 ### Iniciando la Aplicación
 
@@ -20,40 +19,41 @@ Ubicarse en la carpeta ```src``` del proyecto y hacer doble clic sobre el archiv
 #### Línea de comandos
 Ubicarse en la carpeta ```src``` del proyecto y ejecutar el comando:
 ```
-java -cp miniPHP.jar;lib/*;. php.scanner.miniPHP
+java -cp miniCS.jar;lib/*;. php.scanner.Interfaz
 ```
-Este comando se encarga de ejecutar ``` miniPHP.jar``` junto a sus dependencias.
-Al ejecutar el programa  ```miniPHP.jar``` se genera el Lexer ``` Lexer.java``` y  se abre ```Interfaz.java``` 
+Este comando se encarga de ejecutar ``` minic.jar``` junto a sus dependencias.
+Al ejecutar el programa  ```minic.jar``` se genera el Lexer ``` Lexer.java``` ,  ``` Parser.java ```el parser  y  se abre ```Interfaz.java``` 
 
-Después de ejecutado el comando anterior, debería mostrarse en pantalla algo similar a esto:  </br>
-![enter image description here](https://lh3.googleusercontent.com/tb4tjexpcixJA-zJI7PjweNv9oHR_Myp72giCUq02y5ITz66NmFjnXvDsMQNnwn80jzTfg502hYA)
-</br>
-### Cargando el archivo *".php"*
-Un archivo .php puede ser cargado desde el menú *File* haciendo clic el botón "Abrir" . Después de lo cual se abrirá un cuadro solicitándole abrir el archivo deseado.</br>
-![OpenFileDialog](https://lh3.googleusercontent.com/nZ1UitJXhV7vpIy_Tf91ZGkyGeGve1Soknj9x5jhQE85te80HOW26if7nQYd1LtNzlxaCNMCRmAH)
-</br>
+### Cargando el archivo *".frag"*
+Un archivo .frag puede ser cargado desde el menú *File* haciendo clic el botón "Abrir" . Después de lo cual se abrirá un cuadro solicitándole abrir el archivo deseado.</br>
+
 Todo lo que debe hacer es seleccionar el archivo y hacer clic sobre el botón abrir.
-Inmediatamente después de haber abierto el archivo, se llenarán un jTextArea que se verán similar a esto:</br>
-![enter image description here](https://lh3.googleusercontent.com/TOCROeYTZu8VdHW7J6r5mXX2o1w58J_BYXLpKfXPHBuM7lUUsH148yM-5En0gXxZr7Wc-zGn9i3I)
+Inmediatamente después de haber abierto el archivo, se llenará un jTextArea
 </br>
-El jTextArea contendrá el código PHP sin modificaciones.
+El jTextArea contendrá el código C# sin modificaciones.
 
 ### Analizando el archivo
-Para realizar en análisis léxico del archivo, basta con hacer clic sobre el botón con la etiqueta "Analize".
+Para realizar en análisis sintáctico del archivo, basta con hacer clic sobre el botón con la etiqueta "Analize".
 #### Errores no corregibles:
-En caso de que el archivo de entrada contenga errores que no pueden ser corregidos, se muestra el siguiente cuadro de diálogo.</br>
-![Mensaje de diálogo mostrando error. ](https://lh3.googleusercontent.com/TRXp--goFfo31ZrQ4IGTxXgKcl6WIQ-UimXZiHMczQ7uD6tU1u4nzRLQzmtWot8EeBHnmulGX8Gi)
-</br>
-El archivo ```errorslog.txt``` se encuentra en la carpeta ```src``` del proyecto y contiene una línea por cada error encontrado, indicando la línea y columna del error.
-Los archivos se mostrarán marcados con rojo en el  área de texto de la derecha.</br>
-![errorslog.txt](https://lh3.googleusercontent.com/3SmsfXS2Wde5Vi5Zlyfc9aiG_8tT1IJHvB_NXOepTFFLtEPg2aAi8R5faL11P6MK_FXWm5rz8gq_)
-</br>
+En caso de que el archivo de entrada contenga errores que no pueden ser corregidos, se muestra un cuadro de diálogo.</br>
+
 #### Errores corregibles o ningún error
-En caso de que se encuentren errores que pueden ser corregidos. Se marcan con amarillo en el área de texto de la derecha y se muestran los errores en  ```errorslog.txt``` y el archivo de salida será una copia del de entrada pero con los errores corregidos y se guardará en la misma ruta del archivo cargado pero con extensión  ```.out```.</br>
-![enter image description here](https://lh3.googleusercontent.com/nip0RedJumyXsat7Y-n0WdN5fF9JtPSpuLMjTWpuyjr0J7tf3g55M3JVzfjDgaPOMeQjW6c811b6)
-</br>
+En caso de que se encuentren errores que pueden ser corregidos. Se marcan con amarillo en el área de texto de la derecha y se muestran los errores y el archivo de salida será un archivo indicando los tokens y/o errores encontrados; este se guardará en la misma ruta del archivo cargado pero con extensión  ```.out```.
 ### Consola
-El programa cuenta también con una consola en la parte inferior. Esta consola se utiliza para indicar los tokens que se reconocieron del archivo.
+El programa cuenta también con una consola en la parte inferior. Esta consola se utiliza para indicar los tokens y/o errores que se reconocieron del archivo.
+# Estructura de Tabla de Símbolos
+La tabla de símbolos se mostrará en un archivo ubicado en la carpeta del proyecto llamado SymbolTable.txt
+Esta tabla contiene cada uno de los ámbitos utilizados por el programa encerrados por un "INICIA x" y "FINALIZA x" donde x es el nombre
+del ámbito. Para la implementación de la tabla se utilizaron HashMaps que se enlazan con los ámbitos que se relacionan.
+Cada fila corresponde a un registro en la tabla y cada fila consta de 4 columnas: Symbol, DataType, SymbolType, Value
+## Symbol
+Corresponde al identificador con que se almacena en el HashMap
+## Datatype
+Es el tipo de dato del registro, este puede ser int, string, bool o void.
+## SymbolType
+Corresponde al tipo de registro que se almacena: función, variable, constante, etcétera.
+## Value
+Corresponde al valor que almacena el registro.
 ## IDE Utilizado
 El entorno de desarrollo utilizado para construir la aplicación fue NetBeans IDE 8.2.
 ## Notas sobre el autor
