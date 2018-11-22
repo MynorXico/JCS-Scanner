@@ -292,6 +292,8 @@ public class Interfaz extends javax.swing.JFrame {
         */
         Reader reader = new BufferedReader(new FileReader(filename));
         Lexer lexer = new Lexer(reader);
+        Directory.AddFile(new File(filename).getName());
+        Directory.SetCurrentFile(new File(filename).getName());
         parser p = new parser(lexer);
         
         String consola = "";

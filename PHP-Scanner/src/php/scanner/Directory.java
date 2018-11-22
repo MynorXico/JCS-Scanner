@@ -20,12 +20,17 @@ import java_cup.runtime.Scanner;
 public class Directory {
     private static ArrayList<String> FilesToRead = new ArrayList<String>();
     private static String Path;
-    private static String CurrentFile="";
-
+    private static String CurrentFile;
+    
+    private static Directory instanciaUnica;
+    
+    
     public static String GetCurrentFile(){
-        return CurrentFile;
+        return instanciaUnica.CurrentFile;
     }
-
+    public static void SetCurrentFile(String s){
+        instanciaUnica.CurrentFile = s;
+    }
     
     public static boolean AddFile(String fileName){
         File f = new File(Path+fileName);
@@ -33,10 +38,10 @@ public class Directory {
             System.out.println("No se encuentra el archivo " + Path+fileName);
             return false;
         }
-        if(!FilesToRead.contains(fileName)){
+        if(!FilesToRead.contains(Path+fileName)){
             System.out.println("Se agregó la librería " + Path + fileName);
             FilesToRead.add(Path+fileName);
-            CurrentFile = fileName;
+            instanciaUnica.CurrentFile = fileName;
             return true;
         }else{
             System.out.println("La librería " + fileName + " se definió previamente.");
@@ -44,7 +49,6 @@ public class Directory {
         }
     }
     
-    private static Directory instanciaUnica;
     
     public static  void setPath(String newPath){
         Path = newPath;
@@ -64,8 +68,12 @@ public class Directory {
     }
     
     public static void CheckSemantics(String file) throws FileNotFoundException, Exception{
-        Reader reader = new BufferedReader(new FileReader(Path+file));
+        
         File f = new File(Path+file);
+        if(!f.exists()){
+            System.out.println("Error al leer el archivo " + Path+file);
+        }
+        Reader reader = new BufferedReader(new FileReader(Path+file));        
         
         Lexer lexer = new Lexer(reader);
         parser p = new parser(lexer);

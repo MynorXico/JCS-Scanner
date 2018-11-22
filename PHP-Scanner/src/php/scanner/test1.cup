@@ -48,9 +48,10 @@ action code {:
     boolean ReadingParameters = false;
     int CurrentParameter = 0;
     String CurrentFile = "";
+    String CurrentDirectory = "";
     oSymbol CurrentFunction;
     public void MostrarFilaColumnaError(int Fila, int Columna, String error) throws BadLocationException{
-      String newMssg = (Directory.GetCurrentFile() + " - Fila: " + Fila + " - Columna: " + Columna +" - " + error);
+      String newMssg = (CurrentDirectory + " - Fila: " + Fila + " - Columna: " + Columna +" - " + error);
       Interfaz.getInterfaz().AddTextToJTextArea(newMssg + "\n");
     }
 
@@ -107,7 +108,11 @@ start with Program;
 
 
 //GRAMATICA   
-    Program ::= IncludeStar Decl DeclStar {: :}
+    Program ::= {: CurrentDirectory = Directory.getInstancia().GetCurrentFile();         
+    oSymbol ns = new oSymbol("Print", "void", "Function", "");
+    oSymbol ps = new oSymbol("Imprimir", "string", "Parameter", "");
+    ns.AddParameters(ps);
+    ManejadorScopes.getInstancia().AgregarSimbolo("Print",  ns);   :}IncludeStar Decl DeclStar {: :}
     ;
     
     IncludeStar ::= Include IncludeStar|
@@ -259,14 +264,19 @@ start with Program;
     ;
     ReturnStmt ::= t_return ExprOptional: e {:
         if(CurrentFunction.DataType.equals("double") && (e==null || !isNumber(e))){
+            MostrarFilaColumnaError(eright, eleft, "El valor de retorno debe ser del mismo tipo de dato que la función.");
             System.out.println("El valor de retorno debe ser del mismo tipo de dato que la función.");
         } else if(CurrentFunction.DataType.equals("int") && (e==null || !isInteger(e))){
+            MostrarFilaColumnaError(eright, eleft, "El valor de retorno debe ser del mismo tipo de dato que la función.");
             System.out.println("El valor de retorno debe ser del mismo tipo de dato que la función.");
         } else if(CurrentFunction.DataType.equals("string") && (e==null)){
+            MostrarFilaColumnaError(eright, eleft, "El valor de retorno debe ser del mismo tipo de dato que la función.");
             System.out.println("El valor de retorno debe ser del mismo tipo de dato que la función");
         } else if(CurrentFunction.DataType.equals("bool") && !isBoolean(e)){
+            MostrarFilaColumnaError(eright, eleft, "El valor de retorno debe ser del mismo tipo de dato que la función.");
             System.out.println("El valor de retorno debe ser del mismo tipo de dato que la función");
         } else if(CurrentFunction.DataType.equals("void") && e!=null){
+            MostrarFilaColumnaError(eright, eleft, "El valor de retorno debe ser del mismo tipo de dato que la función.");
             System.out.println("El valor de retorno debe ser del mismo tipo de dato que la función.");
         }
     :} pyc
@@ -294,7 +304,7 @@ start with Program;
                     MostrarFilaColumnaError(iright, ileft, "No existe el símbolo " + i + " en el ámbito actual. ");
                     System.out.println("El símbolo " + i + " no se encuentra en el ámbito actual.");
                 }else if(e==null){
-                    MostrarFilaColumnaError(iright, ileft, "No se puede asignar el valor de null a la variable.");
+                    //MostrarFilaColumnaError(iright, ileft, "No se puede asignar el valor de null a la variable.");
                     System.out.println("No se puede asignar el valor de null a la variable.");
                 }else{
                     if((ManejadorScopes.getInstancia().GetSimbolo(i).DataType.compareTo("int") == 0 && !isNumber(e)) 
@@ -323,59 +333,72 @@ start with Program;
              :}|
              Expr: e1 plus Expr: e2 {:
                 try{
-                    if(e1 == null){
-                        System.out.println("La variable " + e1 + " nunca fue asignada.");
+                     if(e1 == null){
+                     MostrarFilaColumnaError(e1right, e1left,"La variable nunca fue asignada.");  
+                        System.out.println("La variable nunca fue asignada.");
                     }else if (e2 == null){
-                        System.out.println("La variable " + e2 + " nunca fue asignada.");
+                     MostrarFilaColumnaError(e1right, e1left,"La variable nunca fue asignada.");  
+                        System.out.println("La variable nunca fue asignada.");
                     }
                     else{
                         RESULT = String.valueOf(Double.valueOf(e1) + Double.valueOf(e2));
                     }
                 }catch(Exception e){
+                     MostrarFilaColumnaError(e1right, e1left,"Esta operación no está deinida para este tipo de dato.");      
                     System.out.println("Esta operación no está deinida para este tipo de dato.");
                 }
                 
             :}|
             Expr: e1 times Expr: e2 {:
                 try{
-                    if(e1 == null){
-                        System.out.println("La variable " + e1 + " nunca fue asignada.");
+                     if(e1 == null){
+                     MostrarFilaColumnaError(e1right, e1left,"La variable nunca fue asignada.");  
+                        System.out.println("La variable nunca fue asignada.");
                     }else if (e2 == null){
-                        System.out.println("La variable " + e2 + " nunca fue asignada.");
+                     MostrarFilaColumnaError(e1right, e1left,"La variable nunca fue asignada.");  
+                        System.out.println("La variable nunca fue asignada.");
                     }
                     else{
                         RESULT = String.valueOf(Double.valueOf(e1) * Double.valueOf(e2));
                     }
                 }catch(Exception e){
+                     MostrarFilaColumnaError(e1right, e1left,"Esta operación no está deinida para este tipo de dato.");      
                     System.out.println("Esta operación no está deinida para este tipo de dato.");
                 }
             :}|
             Expr: e1 divide Expr: e2 {:
                 try{
                     if(e1 == null){
-                        System.out.println("La variable " + e1 + " nunca fue asignada.");
+                     MostrarFilaColumnaError(e1right, e1left,"La variable nunca fue asignada.");  
+                        System.out.println("La variable nunca fue asignada.");
                     }else if (e2 == null){
-                        System.out.println("La variable " + e2 + " nunca fue asignada.");
+                     MostrarFilaColumnaError(e1right, e1left,"La variable nunca fue asignada.");  
+                        System.out.println("La variable nunca fue asignada.");
                     }
                     else{
                         RESULT = String.valueOf(Double.valueOf(e1) / Double.valueOf(e2));
                     }
                 }catch(Exception e){
+                     MostrarFilaColumnaError(e1right, e1left,"Esta operación no está deinida para este tipo de dato.");      
                     System.out.println("Esta operación no está deinida para este tipo de dato.");
                 }
             :}|
 
             Expr: e1 mod Expr: e2 {:
                try{
+                   
                     if(e1 == null){
-                        System.out.println("La variable " + e1 + " nunca fue asignada.");
+                     MostrarFilaColumnaError(e1right, e1left,"La variable nunca fue asignada.");  
+                        System.out.println("La variable nunca fue asignada.");
                     }else if (e2 == null){
-                        System.out.println("La variable " + e2 + " nunca fue asignada.");
+                     MostrarFilaColumnaError(e1right, e1left,"La variable nunca fue asignada.");  
+                        System.out.println("La variable nunca fue asignada.");
                     }
                     else{
                         RESULT = String.valueOf(Double.valueOf(e1) % Double.valueOf(e2));
                     }
                 }catch(Exception e){
+                     MostrarFilaColumnaError(e1right, e1left,"Esta operación no está deinida para este tipo de dato.");      
                     System.out.println("Esta operación no está deinida para este tipo de dato.");
                 }
             :}|
@@ -383,6 +406,7 @@ start with Program;
             Expr logop Expr|
             Expr: e1 cmpop:c Expr: e2{: 
                 if(e1 == null){
+                     MostrarFilaColumnaError(e1right, e1left,"La variable nunca fue asignada.");
                     System.out.println("La variable " + e1 + " nunca fue asignada.");
                 }else if(e2==null){
                     System.out.println("La variable " + e2 + " nunca fue asignada.");
@@ -404,19 +428,27 @@ start with Program;
              Expr: e1 minus Expr: e2 {: 
                 try{
                     if(e1 == null){
+                     MostrarFilaColumnaError(e1right, e1left,"La variable nunca fue asignada.");                  
                         System.out.println("La variable " + e1 + " nunca fue asignada.");
                     }else if (e2 == null){
-                        System.out.println("La variable " + e2 + " nunca fue asignada.");
+                     MostrarFilaColumnaError(e1right, e1left,"La variable nunca fue asignada.");  
+                     System.out.println("La variable " + e2 + " nunca fue asignada.");
                     }
                     else{
                         RESULT = String.valueOf(Double.valueOf(e1) - Double.valueOf(e2));
-                    }
+                     }
                 }catch(Exception e){
+                     MostrarFilaColumnaError(e1right, e1left,"Esta operación no está deinida para este tipo de dato.");          
                     System.out.println("Esta operación no está deinida para este tipo de dato.");
                 }
              :}|
-             minus Expr {:
-
+             minus Expr:e {:
+                try{
+                    RESULT = String.valueOf(-Double.valueOf(e));
+                }catch(Exception ex){
+                    MostrarFilaColumnaError(eright, eleft,"No es un tipo de dato válido");
+                    System.out.println("No es un tipo de dato válido");
+                }
              :}|
              neg Expr:e {: 
                 if(e==null){
@@ -425,6 +457,8 @@ start with Program;
                     System.out.println("Operación de negación !("+e+") = "+ !(Boolean.valueOf(e)));
                     RESULT = String.valueOf(!(Boolean.valueOf(e)));
                 }
+
+                
              :}|
              t_new prnthss_A ident:i prnthss_C {: 
                 
@@ -438,10 +472,12 @@ start with Program;
                Expr brackets_A Expr brackets_C
     ;
     Call ::= ident:i prnthss_A {:
+            System.out.println("Inicia CALL");
             CurrentFunction = ManejadorScopes.getInstancia().GetSimbolo(i);
             if(ManejadorScopes.getInstancia().GetSimbolo(i)==null){
-                System.out.println("No se encuentra el símbolo en el ámbito actual"); 
-             RESULT = "null";
+                System.out.println("No se encuentra el símbolo en el ámbito actual");
+                    MostrarFilaColumnaError(iright, ileft,"No se encuentra el símbolo en el ámbito actual");
+                 RESULT = null;
             }else{
                 RESULT = ManejadorScopes.getInstancia().GetSimbolo(i).Value; 
                 CurrentFunction = ManejadorScopes.getInstancia().GetSimbolo(i);
@@ -452,9 +488,9 @@ start with Program;
              :} 
              
              Actuals {:
-                if(ManejadorScopes.getInstancia().GetSimbolo(i)==null) ;
+                if(CurrentFunction==null) ;
              :} prnthss_C {: 
-              if(ManejadorScopes.getInstancia().GetSimbolo(i)==null){
+              if(CurrentFunction==null){
             }else{
                 WritingParameters = false;
             }
@@ -463,31 +499,38 @@ start with Program;
              :}
              |
              ident:i1 dot ident:i prnthss_A  {:
-             System.out.println("Expr dot ident");
-             if(ManejadorScopes.getInstancia().GetSimbolo(i1)==null){
-                System.out.println("No se encuentra el símbolo en el ámbito actual");
-                return null;                 
-             }
-             String clasePerteneceA = ManejadorScopes.getInstancia().GetSimbolo(i1).DataType;
-             oSymbol functionSymbol = ManejadorScopes.getInstancia().GetFuncion(clasePerteneceA, i);
-             if(functionSymbol == null){
-                 CurrentFunction = functionSymbol;
-                 System.out.println("No se encuentra la función en la tabla de símbolos");
-                 RESULT = null;
-             }else{
-                RESULT = functionSymbol.Value; 
-                CurrentFunction = functionSymbol; 
-                WritingParameters = true; 
-                CurrentParameter = 0; 
-             }
-
-            
+                System.out.println("Expr dot ident");
+                if(ManejadorScopes.getInstancia().GetSimbolo(i1)==null){
+                    MostrarFilaColumnaError(iright, ileft,"No se encuentra el símbolo en el ámbito actual");
+                    System.out.println("No se encuentra el símbolo en el ámbito actual");
+               }else{
+                    String clasePerteneceA = ManejadorScopes.getInstancia().GetSimbolo(i1).DataType;
+                    oSymbol functionSymbol = ManejadorScopes.getInstancia().GetFuncion(clasePerteneceA, i);
+                    if(functionSymbol == null){
+                        CurrentFunction = functionSymbol;
+                        MostrarFilaColumnaError(iright, ileft,"No se encuentra la función en la tabla de símbolos");
+                        System.out.println("No se encuentra la función en la tabla de símbolos");
+                        RESULT = null;
+                    }else{
+                        RESULT = functionSymbol.Value; 
+                        CurrentFunction = functionSymbol; 
+                        WritingParameters = true; 
+                        CurrentParameter = 0; 
+                    }                      }
+                System.out.println("Finaliza expr dot ident");            
              :} 
-             Actuals prnthss_C {: 
+             Actuals {:
+                System.out.println("Inicia Actuals"); 
+                if(CurrentFunction != null)
+                if(CurrentParameter <= CurrentFunction.Parameters.size()-1){
+                 MostrarFilaColumnaError(iright, ileft,"Menos parámetros de los esperados.");
+             }  
+                System.out.println("Finaliza Actuals");
+             :} prnthss_C {: 
              WritingParameters = false; 
              :}
              |
-             Expr dot LibCall: i prnthss_A {: RESULT = ManejadorScopes.getInstancia().GetSimbolo(i).Value; CurrentFunction = ManejadorScopes.getInstancia().GetSimbolo(i); WritingParameters = true; CurrentParameter = 0; :}  Actuals prnthss_C  {: WritingParameters = false; :}
+             Expr dot LibCall: i prnthss_A {: RESULT = ManejadorScopes.getInstancia().GetSimbolo(i).Value; CurrentFunction = ManejadorScopes.getInstancia().GetSimbolo(i); WritingParameters = true; CurrentParameter = 1; :}  Actuals prnthss_C  {: WritingParameters = false; :}
                 // Código para llamada a función
     ;
     LibCall ::= getByte prnthss_A Expr prnthss_C|
@@ -497,23 +540,29 @@ start with Program;
     ;
 
     ExprList    ::= Expr:e {:
-                        if(CurrentFunction == null){
-                            System.out.println("No se encuentra el símbolo en el contexto actual");
-                        }else{
-                             try{    
-                                if((CurrentFunction.Parameters.get(CurrentParameter).DataType.equals("int")  && !isInteger(e))|| 
-                                    (CurrentFunction.Parameters.get(CurrentParameter).DataType.equals("double") && !isNumber(e))|| 
-                                    (CurrentFunction.Parameters.get(CurrentParameter).DataType.equals("bool") && !isBoolean(e))){
-                                    MostrarFilaColumnaError(eright, eleft, "El tipo de dato de los parámetros de la función no coinciden con la definición del mismo. ");                          
-                                    System.out.println("El tipo de dato de los parámetros de la función no coinciden con la definición del mismo. ");
-                                }
-                            } catch (Exception ex){
-                                MostrarFilaColumnaError(eright, eleft, "El número de parámetros no coincide con la definición del mismo");                          
-                                System.out.println("El número de parámetros no coincide con la definición del mismo");
-                            } 
-                            CurrentParameter++; 
+                        if(CurrentFunction != null){
+                            if(CurrentParameter>=CurrentFunction.Parameters.size()){
+                                        MostrarFilaColumnaError(eright, eleft, "Menos parámetros de los esperados");                          
                             }
-                       
+                            else if(CurrentFunction == null){
+                                System.out.println("No se encuentra el símbolo en el contexto actual");
+                            }else{
+                                try{    
+                                    if((CurrentFunction.Parameters.get(CurrentParameter).DataType.equals("int")  && !isInteger(e))|| 
+                                        (CurrentFunction.Parameters.get(CurrentParameter).DataType.equals("double") && !isNumber(e))|| 
+                                        (CurrentFunction.Parameters.get(CurrentParameter).DataType.equals("bool") && !isBoolean(e))){
+                                        MostrarFilaColumnaError(eright, eleft, "El tipo de dato de los parámetros de la función no coinciden con la definición del mismo. ");                          
+                                        System.out.println("El tipo de dato de los parámetros de la función no coinciden con la definición del mismo. ");
+                                    }
+                                } catch (Exception ex){
+                                    MostrarFilaColumnaError(eright, eleft, "El número de parámetros no coincide con la definición del mismo");                          
+                                    System.out.println("El número de parámetros no coincide con la definición del mismo");
+                                } 
+                                CurrentParameter++; 
+                            }
+                        
+                        }
+                        
                         
                     :} |
                     ExprList comma Expr:e {:
